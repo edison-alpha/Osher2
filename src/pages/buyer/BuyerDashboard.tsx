@@ -49,10 +49,10 @@ import bannerImage from '@/assets/growbanner.png';
 import banner11 from '@/assets/banner11.svg';
 import belanjaPng from '@/assets/belanja.png';
 import vaniliVideo from '@/assets/moya-kristal.mp4';
-import banner1 from '@/assets/1.png';
-import banner2 from '@/assets/2.png';
-import banner3 from '@/assets/3.png';
-import banner4 from '@/assets/4.png';
+import banner1 from '@/assets/1.webp';
+import banner2 from '@/assets/2.webp';
+import banner3 from '@/assets/3.webp';
+import banner4 from '@/assets/4.webp';
 
 // Import SVG icons
 import deliveryGuaranteeSvg from '@/assets/delivery_guarantee.svg';
