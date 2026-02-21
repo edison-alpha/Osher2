@@ -49,6 +49,10 @@ import bannerImage from '@/assets/growbanner.png';
 import banner11 from '@/assets/banner11.svg';
 import belanjaPng from '@/assets/belanja.png';
 import vaniliVideo from '@/assets/moya-kristal.mp4';
+import banner1 from '@/assets/1.png';
+import banner2 from '@/assets/2.png';
+import banner3 from '@/assets/3.png';
+import banner4 from '@/assets/4.png';
 
 // Import SVG icons
 import deliveryGuaranteeSvg from '@/assets/delivery_guarantee.svg';
@@ -185,8 +189,10 @@ export default function BuyerDashboard() {
   ];
 
   const referralBanners = [
-    { src: banner11, alt: 'Referral Banner 1' },
-    { src: belanjaPng, alt: 'Belanja Banner' }
+    { src: banner1, alt: 'Banner 1' },
+    { src: banner2, alt: 'Banner 2' },
+    { src: banner3, alt: 'Banner 3' },
+    { src: banner4, alt: 'Banner 4' }
   ];
 
   // Function to scroll to specific slide
@@ -721,11 +727,11 @@ export default function BuyerDashboard() {
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
                           transition={{ delay: 0.2, duration: 0.5 }}
-                          className="absolute bottom-16 left-6"
+                          className="absolute bottom-14 left-6"
                         >
                           <button
                             onClick={() => setIsShareModalOpen(true)}
-                            className="bg-black text-white px-5 py-1.5 rounded-full text-xs font-bold transition-all active:scale-95 shadow-lg hover:shadow-xl"
+                            className="bg-black text-white px-3 py-0.5 rounded-full text-[10px] font-bold transition-all active:scale-95 shadow-lg hover:shadow-xl"
                           >
                             Daftar Sekarang
                           </button>
