@@ -1,0 +1,25 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Truck body -->
+  <rect x="30" y="80" width="80" height="60" rx="8" fill="#D4AF37"/>
+  
+  <!-- Truck cabin -->
+  <path d="M30 80C30 75.5817 33.5817 72 38 72H70C74.4183 72 78 75.5817 78 80V100H30V80Z" fill="#111111"/>
+  
+  <!-- Truck cargo area -->
+  <rect x="110" y="90" width="50" height="50" rx="6" fill="#111111"/>
+  
+  <!-- Truck wheels -->
+  <circle cx="55" cy="150" r="15" fill="#111111"/>
+  <circle cx="55" cy="150" r="8" fill="#D4AF37"/>
+  <circle cx="135" cy="150" r="15" fill="#111111"/>
+  <circle cx="135" cy="150" r="8" fill="#D4AF37"/>
+  
+  <!-- FREE text badge -->
+  <rect x="85" y="35" width="90" height="35" rx="17.5" fill="#2E7D32"/>
+  <text x="130" y="58" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white" text-anchor="middle">FREE</text>
+  
+  <!-- Speed lines -->
+  <line x1="15" y1="95" x2="25" y2="95" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"/>
+  <line x1="10" y1="110" x2="22" y2="110" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"/>
+  <line x1="15" y1="125" x2="25" y2="125" stroke="#D4AF37" stroke-width="3" stroke-linecap="round"/>
+</svg>
