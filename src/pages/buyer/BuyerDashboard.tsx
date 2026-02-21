@@ -19,7 +19,8 @@ import {
   Share2,
   Truck,
   Clock,
-  TrendingUp
+  TrendingUp,
+  MapPin
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Input } from '@/components/ui/input';
@@ -32,6 +33,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { toast } from '@/hooks/use-toast';
 import { NotificationDropdown } from '@/components/buyer/NotificationDropdown';
 import { FloatingNav } from '@/components/buyer/FloatingNav';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 // Import images
 import kretekImg from '@/assets/kretek.png';
@@ -74,6 +76,7 @@ export default function BuyerDashboard() {
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState('populer');
+  const [selectedLocation, setSelectedLocation] = useState('kebonsari');
   const [currentSlide, setCurrentSlide] = useState(0);
   const [currentReferralSlide, setCurrentReferralSlide] = useState(0);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -507,12 +510,30 @@ export default function BuyerDashboard() {
 
         {/* Title */}
         <div className="mb-6 pl-1">
-          <h1 className="text-[22px] font-bold leading-[1.1] tracking-tight text-[#111111]">
-            Nikmati kemudahan<br />belanja setiap hari
-          </h1>
-          <p className="text-[13px] text-[#8E8E93] mt-2 leading-relaxed">
-            Produk berkualitas, harga terjangkau, pengiriman cepat
-          </p>
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex-1">
+              <h1 className="text-[22px] font-bold leading-[1.1] tracking-tight text-[#111111]">
+                Nikmati kemudahan<br />belanja setiap hari
+              </h1>
+              <p className="text-[13px] text-[#8E8E93] mt-2 leading-relaxed">
+                Produk berkualitas, harga terjangkau, pengiriman cepat
+              </p>
+            </div>
+            <div className="flex-shrink-0 mt-1">
+              <Select value={selectedLocation} onValueChange={setSelectedLocation}>
+                <SelectTrigger className="w-[140px] h-9 border-none bg-transparent shadow-none focus:ring-0 focus:ring-offset-0">
+                  <div className="flex items-center gap-2">
+                    <MapPin className="h-4 w-4 text-black" />
+                    <SelectValue />
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="kebonsari" className="focus:bg-black focus:text-white">Kebonsari</SelectItem>
+                  <SelectItem value="geger" className="focus:bg-black focus:text-white">Geger</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
         </div>
 
         {/* Hero Banner Slider */}
