@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Search, Eye, Truck, ShoppingCart, Filter, Download, Printer } from 'lucide-react';
+import { Search, Eye, ShoppingCart, Filter, Download, Printer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -15,7 +15,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -28,7 +27,7 @@ import {
 } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useAdminOrders, useUpdateOrderStatus, useAdminCouriers } from '@/hooks/useAdmin';
+import { useAdminOrders } from '@/hooks/useAdmin';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import { id } from 'date-fns/locale';
@@ -78,17 +77,12 @@ export default function AdminOrders() {
   const { toast } = useToast();
   const [statusFilter, setStatusFilter] = useState<OrderStatus | 'all'>('all');
   const { data: orders, isLoading } = useAdminOrders(statusFilter === 'all' ? undefined : statusFilter);
-  const { data: couriers } = useAdminCouriers();
-  const updateStatus = useUpdateOrderStatus();
-  const invoiceRef = useRef<HTMLDivElement>(null);
+  const [selectedOrder, setSelectedOrder] = useState<typeof orders extends (infer T)[] ? T : never | null>(null);
 
   const [search, setSearch] = useState('');
   const [dateRange, setDateRange] = useState<DateRange | undefined>();
   const [detailDialogOpen, setDetailDialogOpen] = useState(false);
-  const [assignDialogOpen, setAssignDialogOpen] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<typeof orders extends (infer T)[] ? T : never | null>(null);
-  const [selectedCourier, setSelectedCourier] = useState('');
-  const [newStatus, setNewStatus] = useState<OrderStatus>('new');
+  const invoiceRef = useRef<HTMLDivElement>(null);
 
   const filteredOrders = orders?.filter(o => {
     const matchesSearch =
@@ -140,31 +134,6 @@ export default function AdminOrders() {
     setDetailDialogOpen(true);
   };
 
-  const handleOpenAssign = (order: typeof orders extends (infer T)[] ? T : never) => {
-    setSelectedOrder(order);
-    setSelectedCourier(order.courier_id || '');
-    setNewStatus(order.status);
-    setAssignDialogOpen(true);
-  };
-
-  const handleUpdateOrder = async () => {
-    if (!selectedOrder) return;
-
-    try {
-      await updateStatus.mutateAsync({
-        orderId: selectedOrder.id,
-        status: newStatus,
-        courierId: selectedCourier && selectedCourier !== 'none' ? selectedCourier : undefined,
-      });
-      toast({ title: 'Pesanan berhasil diperbarui' });
-      setAssignDialogOpen(false);
-    } catch (error) {
-      toast({
-        title: 'Gagal memperbarui pesanan',
-        variant: 'destructive',
-      });
-    }
-  };
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -281,14 +250,6 @@ export default function AdminOrders() {
                             onClick={() => handleViewDetail(order)}
                           >
                             <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-9 w-9 rounded-full hover:bg-gray-100"
-                            onClick={() => handleOpenAssign(order)}
-                          >
-                            <Truck className="h-4 w-4" />
                           </Button>
                         </div>
                       </TableCell>
@@ -457,67 +418,7 @@ export default function AdminOrders() {
         </DialogContent>
       </Dialog>
 
-      {/* Assign Courier Dialog */}
-      <Dialog open={assignDialogOpen} onOpenChange={setAssignDialogOpen}>
-        <DialogContent style={{ borderRadius: '24px' }}>
-          <DialogHeader>
-            <DialogTitle className="text-xl font-bold text-gray-900">Tugaskan Kurir</DialogTitle>
-            <DialogDescription className="text-gray-600">
-              Pilih kurir untuk mengantar pesanan {selectedOrder?.order_number}
-            </DialogDescription>
-          </DialogHeader>
 
-          <div className="space-y-4 py-4">
-            {selectedOrder?.status === 'paid' && (
-              <div className="bg-blue-50 border border-blue-200 rounded-2xl p-3 text-sm text-blue-800">
-                💡 Status akan otomatis berubah menjadi "Ditugaskan" setelah memilih kurir
-              </div>
-            )}
-
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-gray-700">Status Pesanan</label>
-              <Select value={newStatus} onValueChange={(v) => setNewStatus(v as OrderStatus)}>
-                <SelectTrigger className="rounded-xl border-gray-200">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {statusOptions.map((status) => (
-                    <SelectItem key={status} value={status}>
-                      {statusLabels[status]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-gray-700">Kurir</label>
-              <Select value={selectedCourier} onValueChange={setSelectedCourier}>
-                <SelectTrigger className="rounded-xl border-gray-200">
-                  <SelectValue placeholder="Pilih kurir" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">Tidak ada kurir</SelectItem>
-                  {couriers?.filter(c => c.is_active).map((courier) => (
-                    <SelectItem key={courier.id} value={courier.id}>
-                      {courier.full_name} - {courier.phone}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-
-          <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => setAssignDialogOpen(false)} className="rounded-full">
-              Batal
-            </Button>
-            <Button onClick={handleUpdateOrder} disabled={updateStatus.isPending} className="rounded-full bg-gray-900 hover:bg-gray-800">
-              {updateStatus.isPending ? 'Menyimpan...' : 'Simpan'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

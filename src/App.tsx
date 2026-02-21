@@ -23,6 +23,7 @@ import OrderDetail from "./pages/buyer/OrderDetail";
 import BuyerProfile from "./pages/buyer/Profile";
 import TransactionDetail from "./pages/buyer/TransactionDetail";
 import CourierDashboard from "./pages/courier/CourierDashboard";
+import AvailableOrders from "./pages/courier/AvailableOrders";
 import ActiveOrders from "./pages/courier/ActiveOrders";
 import OrderHistory from "./pages/courier/OrderHistory";
 import CourierProfile from "./pages/courier/CourierProfile";
@@ -77,6 +78,7 @@ const App = () => (
                     {/* Protected Courier Routes */}
                     <Route element={<CourierRoute />}>
                       <Route path="/courier" element={<CourierDashboard />} />
+                      <Route path="/courier/available" element={<AvailableOrders />} />
                       <Route path="/courier/active" element={<ActiveOrders />} />
                       <Route path="/courier/history" element={<OrderHistory />} />
                       <Route path="/courier/profile" element={<CourierProfile />} />

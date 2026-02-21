@@ -13,7 +13,8 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { path: '/courier', exact: true, icon: Package, label: 'Dashboard' },
-  { path: '/courier/active', icon: ClipboardList, label: 'Aktif' },
+  { path: '/courier/available', icon: ClipboardList, label: 'Tersedia' },
+  { path: '/courier/active', icon: Package, label: 'Aktif' },
   { path: '/courier/history', icon: History, label: 'Riwayat' },
   { path: '/courier/profile', icon: User, label: 'Profil' },
 ];
@@ -44,10 +45,10 @@ export function CourierFloatingNav() {
   const handleNavClick = (e: React.MouseEvent, item: NavItem, index: number) => {
     e.preventDefault();
     if (index === activeIndex || isAnimating) return;
-    
+
     setIsAnimating(true);
     setActiveIndex(index);
-    
+
     // Small delay to let animation start
     setTimeout(() => {
       navigate(item.path);
@@ -56,28 +57,28 @@ export function CourierFloatingNav() {
   };
 
   return (
-    <div 
+    <div
       className="fixed left-0 right-0 bottom-0 z-50 bg-[#111111]/95 backdrop-blur-xl border-t border-white/10 shadow-[0_-10px_40px_rgba(0,0,0,0.3)] rounded-t-3xl"
-      style={{ 
+      style={{
         paddingBottom: 'env(safe-area-inset-bottom)',
       }}
     >
       <div className="flex items-center justify-center w-full px-2 py-1 gap-0">
-        <nav 
+        <nav
           className="flex items-center gap-0 justify-center"
         >
           {navItems.map((item, index) => {
             const Icon = item.icon;
             const isActive = index === activeIndex;
-            
+
             return (
-              <a 
+              <a
                 key={item.path}
                 href={item.path}
                 onClick={(e) => handleNavClick(e, item, index)}
                 className="cursor-pointer"
               >
-                <motion.button 
+                <motion.button
                   layout
                   className={cn(
                     "relative flex flex-col items-center justify-center transition-all duration-200 px-4 sm:px-5 rounded-2xl",
@@ -98,15 +99,15 @@ export function CourierFloatingNav() {
                     }}
                   >
                     <div className="relative">
-                      <Icon 
+                      <Icon
                         className="h-7 w-7 sm:h-8 sm:w-8 shrink-0"
                         strokeWidth={isActive ? 2 : 1.5}
                       />
                     </div>
                   </motion.div>
-                  
+
                   {/* Label selalu tampil */}
-                  <motion.span 
+                  <motion.span
                     className={cn(
                       "text-[9px] sm:text-[10px] font-medium tracking-tight whitespace-nowrap mt-1",
                       isActive ? "text-white" : "text-white/50"
