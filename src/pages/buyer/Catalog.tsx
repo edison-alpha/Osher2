@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { Search, Package, Heart, Star, Truck, Plus, Check, X, Flame, Wind, Sparkles, Cigarette, Grid3x3, ShoppingCart, Clock, TrendingUp } from 'lucide-react';
+import { Search, Package, Truck, Plus, Check, X, Flame, Wind, Sparkles, Cigarette, Grid3x3, ShoppingCart, Clock, TrendingUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -27,7 +27,7 @@ export default function Catalog() {
   const [showSearchDropdown, setShowSearchDropdown] = useState(false);
   const [searchHistory, setSearchHistory] = useState<string[]>([]);
   const { items, addItem, removeItem } = useCart();
-  
+
   const { data: products, isLoading: productsLoading } = useProducts(selectedCategory);
   const { data: categories, isLoading: categoriesLoading } = useCategories();
 
@@ -57,19 +57,19 @@ export default function Catalog() {
   const searchSuggestions = useMemo(() => {
     if (!searchQuery.trim() || !products) return [];
     const query = searchQuery.toLowerCase();
-    
+
     // Get unique product names that match
     const productMatches = products
       .filter(p => p.name.toLowerCase().includes(query))
       .map(p => p.name)
       .slice(0, 5);
-    
+
     // Get unique category names that match
     const categoryMatches = categories
       ?.filter(c => c.name.toLowerCase().includes(query))
       .map(c => c.name)
       .slice(0, 3) || [];
-    
+
     return [...new Set([...productMatches, ...categoryMatches])];
   }, [searchQuery, products, categories]);
 
@@ -132,7 +132,7 @@ export default function Catalog() {
 
   const handleAddToCart = (product: any) => {
     const isInCart = items.some(item => item.productId === product.id);
-    
+
     if (isInCart) {
       removeItem(product.id);
       toast({
@@ -169,13 +169,11 @@ export default function Catalog() {
 
   // Assign background colors and dummy data to products
   const productsWithBg = filteredProducts.map((product, index) => {
-    const dummyRating = 3.5 + (parseInt(product.id.slice(-2), 16) % 15) / 10;
     const dummySold = (parseInt(product.id.slice(-3), 16) % 500) + 10;
-    
+
     return {
       ...product,
       bgColor: bgColors[index % bgColors.length],
-      rating: dummyRating,
       totalSold: dummySold
     };
   });
@@ -387,14 +385,14 @@ export default function Catalog() {
 
         {/* Products Grid */}
         {productsLoading ? (
-          <motion.div 
+          <motion.div
             className="grid grid-cols-2 gap-x-2 gap-y-4 -mx-4 px-2"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
             {Array.from({ length: 6 }).map((_, i) => (
-              <motion.div 
-                key={i} 
+              <motion.div
+                key={i}
                 className="group"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -410,7 +408,7 @@ export default function Catalog() {
             ))}
           </motion.div>
         ) : productsWithBg.length === 0 ? (
-          <motion.div 
+          <motion.div
             className="flex flex-col items-center justify-center py-16"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -423,7 +421,7 @@ export default function Catalog() {
               Produk Tidak Ditemukan
             </h3>
             <p className="text-[13px] text-[#8E8E93] text-center max-w-xs mb-4">
-              {searchQuery 
+              {searchQuery
                 ? `Tidak ada produk yang cocok dengan "${searchQuery}"`
                 : 'Tidak ada produk dalam kategori ini'}
             </p>
@@ -440,15 +438,15 @@ export default function Catalog() {
             )}
           </motion.div>
         ) : (
-          <motion.div 
+          <motion.div
             className="grid grid-cols-2 gap-x-2 gap-y-4 -mx-4 px-2 mb-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.3 }}
           >
             {productsWithBg.map((product, index) => (
-              <motion.div 
-                key={product.id} 
+              <motion.div
+                key={product.id}
                 className="group"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -463,19 +461,11 @@ export default function Catalog() {
                       "relative aspect-[4/4] overflow-hidden rounded-b-3xl",
                       product.bgColor
                     )}>
-                      <button 
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                        }}
-                        className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/40 backdrop-blur-md flex items-center justify-center text-black z-10 transition-colors hover:bg-white"
-                      >
-                        <Heart className="h-5 w-5" strokeWidth={1.5} />
-                      </button>
+
                       {product.image_url ? (
                         <div className="relative w-full h-full">
-                          <img 
-                            src={product.image_url} 
+                          <img
+                            src={product.image_url}
                             alt={product.name}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           />
@@ -486,7 +476,7 @@ export default function Catalog() {
                           <span className="text-4xl opacity-30">📦</span>
                         </div>
                       )}
-                      
+
                       {/* Badge */}
                       <div className="absolute bottom-0 left-0">
                         <div className="bg-[#2E7D32] text-white text-[8px] font-bold py-1.5 px-3 flex items-center gap-1 rounded-tr-lg">
@@ -495,7 +485,7 @@ export default function Catalog() {
                         </div>
                       </div>
                     </div>
-                    
+
                     {/* Product Info */}
                     <div className="px-4 pb-4 pt-3">
                       <div className="flex justify-between items-start">
@@ -507,17 +497,13 @@ export default function Catalog() {
                             {product.category?.name || 'Premium'}
                           </p>
                           <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-0.5">
-                              <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                              <span className="text-[10px] font-medium text-[#111111]">{product.rating.toFixed(1)}</span>
-                            </div>
                             <span className="text-[10px] text-[#8E8E93]">Terjual {product.totalSold}</span>
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="font-bold text-[14px]">
                               {formatPrice(product.latestPrice?.selling_price || 0)}
                             </span>
-                            <motion.button 
+                            <motion.button
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -574,9 +560,9 @@ export default function Catalog() {
       <AnimatePresence>
         {cartItemCount > 0 && (
           <Link to="/buyer/cart">
-            <motion.div 
+            <motion.div
               className="fixed z-40"
-              style={{ 
+              style={{
                 bottom: 'max(88px, calc(88px + env(safe-area-inset-bottom)))',
                 right: '16px'
               }}
@@ -585,17 +571,17 @@ export default function Catalog() {
               exit={{ scale: 0, opacity: 0 }}
               transition={{ type: "spring", stiffness: 260, damping: 20 }}
             >
-            <button className="w-14 h-14 sm:w-16 sm:h-16 bg-[#111111] text-white rounded-full flex items-center justify-center shadow-[0_10px_40px_rgba(0,0,0,0.2)] transition-all active:scale-90 hover:bg-[#2E2E2E] relative group">
-              <ShoppingCart className="h-6 w-6 sm:h-7 sm:w-7" strokeWidth={2} />
-              <span className="absolute -top-1.5 -right-1.5 w-7 h-7 sm:w-8 sm:h-8 bg-[#D4AF37] text-white text-xs font-bold rounded-full flex items-center justify-center border-2 border-white shadow-lg">
-                {cartItemCount}
-              </span>
-              {/* Pulse animation */}
-              <span className="absolute inset-0 rounded-full bg-[#111111] animate-ping opacity-20"></span>
-            </button>
-          </motion.div>
-        </Link>
-      )}
+              <button className="w-14 h-14 sm:w-16 sm:h-16 bg-[#111111] text-white rounded-full flex items-center justify-center shadow-[0_10px_40px_rgba(0,0,0,0.2)] transition-all active:scale-90 hover:bg-[#2E2E2E] relative group">
+                <ShoppingCart className="h-6 w-6 sm:h-7 sm:w-7" strokeWidth={2} />
+                <span className="absolute -top-1.5 -right-1.5 w-7 h-7 sm:w-8 sm:h-8 bg-[#D4AF37] text-white text-xs font-bold rounded-full flex items-center justify-center border-2 border-white shadow-lg">
+                  {cartItemCount}
+                </span>
+                {/* Pulse animation */}
+                <span className="absolute inset-0 rounded-full bg-[#111111] animate-ping opacity-20"></span>
+              </button>
+            </motion.div>
+          </Link>
+        )}
       </AnimatePresence>
 
       <style>{`

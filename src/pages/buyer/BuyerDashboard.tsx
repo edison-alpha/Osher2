@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { 
-  ShoppingBag, 
-  Heart,
+import {
+  ShoppingBag,
+
   Search,
   User,
   Plus,
@@ -10,7 +10,7 @@ import {
   Home,
   Compass,
   UserCircle,
-  Star,
+  Flame,
   Package,
   ShoppingCart,
   X,
@@ -92,13 +92,13 @@ export default function BuyerDashboard() {
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) return null;
-      
+
       const { data, error } = await supabase
         .from('buyer_profiles')
         .select('referral_code, full_name')
         .eq('user_id', user.id)
         .single();
-      
+
       if (error) throw error;
       return data;
     },
@@ -269,7 +269,7 @@ export default function BuyerDashboard() {
     videos.forEach((video) => {
       const slideIndex = parseInt(video.getAttribute('data-slide') || '0');
       if (slideIndex === currentSlide) {
-        (video as HTMLVideoElement).play().catch(() => {});
+        (video as HTMLVideoElement).play().catch(() => { });
       } else {
         (video as HTMLVideoElement).pause();
       }
@@ -292,7 +292,7 @@ export default function BuyerDashboard() {
         .order('created_at', { ascending: false })
         .limit(8);
       if (error) throw error;
-      
+
       // Transform data to include latest price and stock
       return data?.map(product => {
         const latestPrice = product.product_prices?.[0]?.selling_price || 0;
@@ -310,13 +310,13 @@ export default function BuyerDashboard() {
   const searchSuggestions = useMemo(() => {
     if (!searchQuery.trim() || !products) return [];
     const query = searchQuery.toLowerCase();
-    
+
     // Get unique product names that match
     const productMatches = products
       .filter(p => p.name.toLowerCase().includes(query))
       .map(p => p.name)
       .slice(0, 5);
-    
+
     return [...new Set(productMatches)];
   }, [searchQuery, products]);
 
@@ -333,7 +333,7 @@ export default function BuyerDashboard() {
   const handleAddToCart = (product: any) => {
     // Check if product is already in cart
     const isInCart = items.some(item => item.productId === product.id);
-    
+
     if (isInCart) {
       // Remove from cart
       removeItem(product.id);
@@ -373,13 +373,11 @@ export default function BuyerDashboard() {
   // Assign background colors to products
   const productsWithBg = products?.map((product, index) => {
     // Generate dummy data berdasarkan product id untuk konsistensi
-    const dummyRating = 3.5 + (parseInt(product.id.slice(-2), 16) % 15) / 10; // Rating 3.5 - 5.0
     const dummySold = (parseInt(product.id.slice(-3), 16) % 500) + 10; // Terjual 10 - 510
-    
+
     return {
       ...product,
       bgColor: bgColors[index % bgColors.length],
-      rating: dummyRating,
       totalSold: dummySold
     };
   }) || [];
@@ -392,14 +390,14 @@ export default function BuyerDashboard() {
           <div className="flex items-center gap-3 mb-4">
             <Link to="/buyer/profile">
               <div className="w-12 h-12 flex items-center justify-center shrink-0">
-                <img 
-                  src={osercLogo} 
+                <img
+                  src={osercLogo}
                   alt="Profile"
                   className="w-full h-full object-contain"
                 />
               </div>
             </Link>
-            
+
             {/* Search Bar */}
             <div className="relative flex-1" ref={searchRef}>
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 h-4 w-4" strokeWidth={1.5} />
@@ -429,7 +427,7 @@ export default function BuyerDashboard() {
                     exit={{ opacity: 0, y: -10 }}
                     transition={{ duration: 0.2 }}
                     className="absolute top-full mt-2 bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden z-50 max-h-[400px] overflow-y-auto"
-                    style={{ 
+                    style={{
                       left: '-48px',
                       right: '-96px',
                       width: 'auto'
@@ -500,7 +498,7 @@ export default function BuyerDashboard() {
                 )}
               </AnimatePresence>
             </div>
-            
+
             <div className="flex gap-2 shrink-0">
               <NotificationDropdown />
             </div>
@@ -519,7 +517,7 @@ export default function BuyerDashboard() {
 
         {/* Hero Banner Slider */}
         <div className="relative mb-6 -mx-4 px-2">
-          <div 
+          <div
             ref={sliderRef}
             className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar scroll-smooth cursor-grab active:cursor-grabbing"
             onMouseDown={(e) => {
@@ -561,7 +559,7 @@ export default function BuyerDashboard() {
             }}
           >
             {banners.map((banner, index) => (
-              <div 
+              <div
                 key={index}
                 className="w-full flex-shrink-0 snap-center"
               >
@@ -569,16 +567,16 @@ export default function BuyerDashboard() {
                   {/* Background Media */}
                   <div className="absolute inset-0 z-0">
                     {banner.type === 'image' ? (
-                      <img 
+                      <img
                         src={banner.src}
                         alt="Banner"
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <video 
-                        autoPlay 
-                        loop 
-                        muted 
+                      <video
+                        autoPlay
+                        loop
+                        muted
                         playsInline
                         preload="auto"
                         className="w-full h-full object-cover"
@@ -588,7 +586,7 @@ export default function BuyerDashboard() {
                       </video>
                     )}
                   </div>
-                  
+
                   <div className="z-10 max-w-[55%] relative p-8">
                     <h2 className={cn(
                       "text-lg font-bold mb-4 leading-tight drop-shadow-lg",
@@ -607,7 +605,7 @@ export default function BuyerDashboard() {
               </div>
             ))}
           </div>
-          
+
           {/* Dots Indicator */}
           <div className="flex justify-center gap-2 mt-4">
             {banners.map((_, index) => (
@@ -660,7 +658,7 @@ export default function BuyerDashboard() {
             {/* Background decoration */}
             <div className="absolute top-0 right-0 w-32 h-32 bg-[#D4AF37]/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-[#D4AF37]/5 rounded-full translate-y-1/2 -translate-x-1/2"></div>
-            
+
             <div className="relative z-10">
               {/* Header */}
               <div className="flex items-center justify-between mb-4 px-4">
@@ -674,7 +672,7 @@ export default function BuyerDashboard() {
                   </button>
                 </Link>
               </div>
-              
+
               {/* Content - Full Width Banner with Animation */}
               <div className="px-4 relative">
                 <div className="relative rounded-2xl min-h-[200px]">
@@ -688,14 +686,14 @@ export default function BuyerDashboard() {
                       transition={{ duration: 0.5, ease: "easeInOut" }}
                       className="relative"
                     >
-                      <motion.img 
-                        src={referralBanners[currentReferralSlide].src} 
-                        alt={referralBanners[currentReferralSlide].alt} 
+                      <motion.img
+                        src={referralBanners[currentReferralSlide].src}
+                        alt={referralBanners[currentReferralSlide].alt}
                         className="w-full h-auto object-cover rounded-2xl"
                         whileHover={{ scale: 1.02 }}
                         transition={{ duration: 0.3 }}
                       />
-                      
+
                       {/* Button Daftar Sekarang - only on first banner */}
                       {currentReferralSlide === 0 && (
                         <motion.div
@@ -704,7 +702,7 @@ export default function BuyerDashboard() {
                           transition={{ delay: 0.2, duration: 0.5 }}
                           className="absolute bottom-16 left-6"
                         >
-                          <button 
+                          <button
                             onClick={() => setIsShareModalOpen(true)}
                             className="bg-black text-white px-5 py-1.5 rounded-full text-xs font-bold transition-all active:scale-95 shadow-lg hover:shadow-xl"
                           >
@@ -723,8 +721,8 @@ export default function BuyerDashboard() {
                         onClick={() => setCurrentReferralSlide(index)}
                         className={cn(
                           "transition-all duration-300 rounded-full",
-                          currentReferralSlide === index 
-                            ? "w-6 h-1.5 bg-white" 
+                          currentReferralSlide === index
+                            ? "w-6 h-1.5 bg-white"
                             : "w-1.5 h-1.5 bg-white/50"
                         )}
                       />
@@ -747,15 +745,15 @@ export default function BuyerDashboard() {
               </button>
             </Link>
           </div>
-          
+
           <div className="flex gap-4 overflow-x-auto hide-scrollbar -mx-4 px-4">
             {categories.map((cat) => (
               <Link key={cat.id} to="/buyer/catalog">
                 <div className="flex flex-col items-center gap-2 shrink-0">
                   <div className="w-16 h-16 rounded-full bg-white shadow-sm flex items-center justify-center overflow-hidden border border-gray-100">
                     {cat.type === 'image' ? (
-                      <img 
-                        src={cat.icon} 
+                      <img
+                        src={cat.icon}
                         alt={cat.name}
                         className="w-full h-full object-cover"
                       />
@@ -784,8 +782,8 @@ export default function BuyerDashboard() {
             </Link>
           </div>
         </div>
-        
-        <motion.div 
+
+        <motion.div
           className="grid grid-cols-2 gap-x-2 gap-y-4 -mx-4 px-2 mb-8"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -794,8 +792,8 @@ export default function BuyerDashboard() {
           {isLoading ? (
             // Loading skeleton
             [...Array(4)].map((_, i) => (
-              <motion.div 
-                key={i} 
+              <motion.div
+                key={i}
                 className="group"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -811,8 +809,8 @@ export default function BuyerDashboard() {
             ))
           ) : productsWithBg.length > 0 ? (
             productsWithBg.slice(0, 4).map((product, index) => (
-              <motion.div 
-                key={product.id} 
+              <motion.div
+                key={product.id}
                 className="group"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -826,16 +824,11 @@ export default function BuyerDashboard() {
                       "relative aspect-[4/4] overflow-hidden rounded-b-3xl",
                       product.bgColor
                     )}>
-                      <button 
-                        onClick={(e) => e.stopPropagation()}
-                        className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/40 backdrop-blur-md flex items-center justify-center text-black z-10 transition-colors hover:bg-white"
-                      >
-                        <Heart className="h-5 w-5" strokeWidth={1.5} />
-                      </button>
+
                       {product.image_url ? (
                         <div className="relative w-full h-full">
-                          <img 
-                            src={product.image_url} 
+                          <img
+                            src={product.image_url}
                             alt={product.name}
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                           />
@@ -846,7 +839,7 @@ export default function BuyerDashboard() {
                           <span className="text-4xl opacity-30">📦</span>
                         </div>
                       )}
-                      
+
                       {/* Badge */}
                       <div className="absolute bottom-0 left-0">
                         <div className="bg-[#2E7D32] text-white text-[8px] font-bold py-1.5 px-3 flex items-center gap-1 rounded-tr-lg">
@@ -855,7 +848,7 @@ export default function BuyerDashboard() {
                         </div>
                       </div>
                     </div>
-                    
+
                     {/* Product Info */}
                     <div className="px-4 pb-4 pt-3">
                       <div className="flex justify-between items-start">
@@ -867,17 +860,13 @@ export default function BuyerDashboard() {
                             {product.categories?.name || 'Premium'}
                           </p>
                           <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-0.5">
-                              <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                              <span className="text-[10px] font-medium text-[#111111]">{product.rating.toFixed(1)}</span>
-                            </div>
                             <span className="text-[10px] text-[#8E8E93]">Terjual {product.totalSold}</span>
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="font-bold text-[14px]">
                               {formatPrice(product.price)}
                             </span>
-                            <button 
+                            <button
                               onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -924,7 +913,7 @@ export default function BuyerDashboard() {
             </Link>
           </div>
         </div>
-        
+
         <div className="grid grid-cols-2 gap-x-2 gap-y-4 -mx-4 px-2">
           {isLoading ? (
             // Loading skeleton
@@ -943,100 +932,91 @@ export default function BuyerDashboard() {
               .sort((a, b) => b.totalSold - a.totalSold)
               .slice(0, 4)
               .map((product) => (
-              <motion.div 
-                key={product.id} 
-                className="group"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-                whileHover={{ y: -5 }}
-              >
-                <Link to={`/buyer/product/${product.id}`}>
-                  <div className="rounded-3xl overflow-hidden shadow-sm bg-white">
-                    {/* Image Container */}
-                    <div className={cn(
-                      "relative aspect-[4/4] overflow-hidden rounded-b-3xl",
-                      product.bgColor
-                    )}>
-                      <button 
-                        onClick={(e) => e.stopPropagation()}
-                        className="absolute top-4 right-4 w-9 h-9 rounded-full bg-white/40 backdrop-blur-md flex items-center justify-center text-black z-10 transition-colors hover:bg-white"
-                      >
-                        <Heart className="h-5 w-5" strokeWidth={1.5} />
-                      </button>
-                      {product.image_url ? (
-                        <div className="relative w-full h-full">
-                          <img 
-                            src={product.image_url} 
-                            alt={product.name}
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
-                        </div>
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <span className="text-4xl opacity-30">📦</span>
-                        </div>
-                      )}
-                      
-                      {/* Badge - Best Seller */}
-                      <div className="absolute bottom-0 left-0">
-                        <div className="bg-[#D4AF37] text-white text-[8px] font-bold py-1.5 px-3 flex items-center gap-1 rounded-tr-lg">
-                          <Star className="w-3 h-3 fill-white" strokeWidth={2.5} />
-                          <span>TERLARIS</span>
+                <motion.div
+                  key={product.id}
+                  className="group"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.4 }}
+                  whileHover={{ y: -5 }}
+                >
+                  <Link to={`/buyer/product/${product.id}`}>
+                    <div className="rounded-3xl overflow-hidden shadow-sm bg-white">
+                      {/* Image Container */}
+                      <div className={cn(
+                        "relative aspect-[4/4] overflow-hidden rounded-b-3xl",
+                        product.bgColor
+                      )}>
+
+                        {product.image_url ? (
+                          <div className="relative w-full h-full">
+                            <img
+                              src={product.image_url}
+                              alt={product.name}
+                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                          </div>
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center">
+                            <span className="text-4xl opacity-30">📦</span>
+                          </div>
+                        )}
+
+                        {/* Badge - Best Seller */}
+                        <div className="absolute bottom-0 left-0">
+                          <div className="bg-[#D4AF37] text-white text-[8px] font-bold py-1.5 px-3 flex items-center gap-1 rounded-tr-lg">
+                            <Flame className="w-3 h-3 fill-white" strokeWidth={2.5} />
+                            <span>TERLARIS</span>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    
-                    {/* Product Info */}
-                    <div className="px-4 pb-4 pt-3">
-                      <div className="flex justify-between items-start">
-                        <div className="flex-1">
-                          <h3 className="font-bold text-[13px] mb-0.5 leading-tight line-clamp-2">
-                            {product.name}
-                          </h3>
-                          <p className="text-[11px] text-[#8E8E93] mb-1 line-clamp-1">
-                            {product.categories?.name || 'Premium'}
-                          </p>
-                          <div className="flex items-center justify-between mb-2">
-                            <div className="flex items-center gap-0.5">
-                              <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
-                              <span className="text-[10px] font-medium text-[#111111]">{product.rating.toFixed(1)}</span>
+
+                      {/* Product Info */}
+                      <div className="px-4 pb-4 pt-3">
+                        <div className="flex justify-between items-start">
+                          <div className="flex-1">
+                            <h3 className="font-bold text-[13px] mb-0.5 leading-tight line-clamp-2">
+                              {product.name}
+                            </h3>
+                            <p className="text-[11px] text-[#8E8E93] mb-1 line-clamp-1">
+                              {product.categories?.name || 'Premium'}
+                            </p>
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="text-[10px] text-[#D4AF37] font-semibold">Terjual {product.totalSold}</span>
                             </div>
-                            <span className="text-[10px] text-[#D4AF37] font-semibold">Terjual {product.totalSold}</span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="font-bold text-[14px]">
-                              {formatPrice(product.price)}
-                            </span>
-                            <button 
-                              onClick={(e) => {
-                                e.preventDefault();
-                                e.stopPropagation();
-                                handleAddToCart(product);
-                              }}
-                              disabled={product.stock <= 0 && !items.some(item => item.productId === product.id)}
-                              className={cn(
-                                "w-8 h-8 rounded-full flex items-center justify-center transition-all active:scale-90 disabled:cursor-not-allowed relative group",
-                                items.some(item => item.productId === product.id)
-                                  ? "bg-green-500 hover:bg-green-600 text-white"
-                                  : "bg-black hover:bg-[#2E2E2E] text-white disabled:bg-gray-300"
-                              )}
-                            >
-                              {items.some(item => item.productId === product.id) ? (
-                                <Check className="h-[18px] w-[18px]" strokeWidth={2.5} />
-                              ) : (
-                                <ShoppingCart className="h-[18px] w-[18px]" strokeWidth={2} />
-                              )}
-                            </button>
+                            <div className="flex items-center justify-between">
+                              <span className="font-bold text-[14px]">
+                                {formatPrice(product.price)}
+                              </span>
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  handleAddToCart(product);
+                                }}
+                                disabled={product.stock <= 0 && !items.some(item => item.productId === product.id)}
+                                className={cn(
+                                  "w-8 h-8 rounded-full flex items-center justify-center transition-all active:scale-90 disabled:cursor-not-allowed relative group",
+                                  items.some(item => item.productId === product.id)
+                                    ? "bg-green-500 hover:bg-green-600 text-white"
+                                    : "bg-black hover:bg-[#2E2E2E] text-white disabled:bg-gray-300"
+                                )}
+                              >
+                                {items.some(item => item.productId === product.id) ? (
+                                  <Check className="h-[18px] w-[18px]" strokeWidth={2.5} />
+                                ) : (
+                                  <ShoppingCart className="h-[18px] w-[18px]" strokeWidth={2} />
+                                )}
+                              </button>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
-              </motion.div>
-            ))
+                  </Link>
+                </motion.div>
+              ))
           ) : (
             <div className="col-span-2 text-center py-8 text-slate-500">
               Tidak ada produk tersedia
@@ -1056,19 +1036,19 @@ export default function BuyerDashboard() {
               Bagikan Kode Referral
             </DialogTitle>
           </DialogHeader>
-          
+
           <div className="py-4">
             <div className="text-center mb-6">
               <p className="text-sm text-[#8E8E93] mb-4">
                 Ajak teman belanja dan dapatkan NETN dari setiap pembelian mereka!
               </p>
-              
+
               {/* Referral Code Display */}
               <div className="bg-[#111111] rounded-2xl p-6 mb-4 relative overflow-hidden">
                 {/* Background decoration */}
                 <div className="absolute top-0 right-0 w-24 h-24 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2"></div>
                 <div className="absolute bottom-0 left-0 w-16 h-16 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2"></div>
-                
+
                 {/* Success Animation Overlay */}
                 {isCopied && (
                   <div className="absolute inset-0 bg-green-500 flex items-center justify-center z-20 animate-fade-in-out">
@@ -1080,7 +1060,7 @@ export default function BuyerDashboard() {
                     </div>
                   </div>
                 )}
-                
+
                 <div className="relative z-10">
                   <p className="text-xs text-white/60 mb-2">Kode Referral Anda:</p>
                   <p className="text-3xl font-bold text-white tracking-wider mb-4">
@@ -1111,7 +1091,7 @@ export default function BuyerDashboard() {
                   </>
                 )}
               </button>
-              
+
               <button
                 onClick={handleShare}
                 className="w-full bg-white border-2 border-[#111111] text-[#111111] py-3 rounded-full text-sm font-semibold flex items-center justify-center gap-2 transition-all active:scale-95 hover:bg-[#F9F9F9]"
