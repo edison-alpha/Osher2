@@ -62,7 +62,7 @@ export const buyerRegistrationSchema = z.object({
   fullName: fullNameSchema,
   nik: nikSchema,
   phone: phoneSchema,
-  domicileId: z.string().uuid('Pilih domisili'),
+  address: z.string().trim().min(5, 'Alamat minimal 5 karakter').max(255, 'Alamat maksimal 255 karakter'),
   referralCode: referralCodeSchema,
   bankId: z.string().uuid('Pilih bank'),
   bankAccountNumber: bankAccountSchema,

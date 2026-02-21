@@ -16,20 +16,9 @@ import {
   FormMessage,
   FormDescription,
 } from '@/components/ui/form';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+
 import { toast } from 'sonner';
 
-interface Domicile {
-  id: string;
-  name: string;
-  city: string | null;
-}
 
 interface Bank {
   id: string;
@@ -46,7 +35,7 @@ export function BuyerRegistrationForm({ onSuccess, onSwitchToLogin }: BuyerRegis
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [domiciles, setDomiciles] = useState<Domicile[]>([]);
+
   const [banks, setBanks] = useState<Bank[]>([]);
   const { signUp } = useAuth();
 
@@ -59,7 +48,7 @@ export function BuyerRegistrationForm({ onSuccess, onSwitchToLogin }: BuyerRegis
       fullName: '',
       nik: '',
       phone: '',
-      domicileId: '',
+      address: '',
       referralCode: '',
       bankId: '',
       bankAccountNumber: '',
@@ -72,12 +61,7 @@ export function BuyerRegistrationForm({ onSuccess, onSwitchToLogin }: BuyerRegis
   }, []);
 
   const fetchMasterData = async () => {
-    const [domicilesRes, banksRes] = await Promise.all([
-      supabase.from('domiciles').select('id, name, city').eq('is_active', true).order('name'),
-      supabase.from('banks').select('id, name, code').eq('is_active', true).order('name'),
-    ]);
-
-    if (domicilesRes.data) setDomiciles(domicilesRes.data);
+    const banksRes = await supabase.from('banks').select('id, name, code').eq('is_active', true).order('name');
     if (banksRes.data) setBanks(banksRes.data);
   };
 
@@ -137,7 +121,7 @@ export function BuyerRegistrationForm({ onSuccess, onSwitchToLogin }: BuyerRegis
         full_name: data.fullName,
         nik: data.nik,
         phone: data.phone,
-        domicile_id: data.domicileId,
+        address: data.address,
         referrer_id: referrerId,
         bank_id: data.bankId,
         bank_account_number: data.bankAccountNumber,
@@ -182,7 +166,7 @@ export function BuyerRegistrationForm({ onSuccess, onSwitchToLogin }: BuyerRegis
           {/* Email & Password Section */}
           <div className="rounded-lg border border-border bg-card p-4 space-y-4">
             <h3 className="font-semibold text-foreground">Akun</h3>
-            
+
             <FormField
               control={form.control}
               name="email"
@@ -269,7 +253,7 @@ export function BuyerRegistrationForm({ onSuccess, onSwitchToLogin }: BuyerRegis
               <User className="h-4 w-4" />
               Data Diri
             </h3>
-            
+
             <FormField
               control={form.control}
               name="fullName"
@@ -333,25 +317,21 @@ export function BuyerRegistrationForm({ onSuccess, onSwitchToLogin }: BuyerRegis
 
             <FormField
               control={form.control}
-              name="domicileId"
+              name="address"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Domisili *</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isLoading}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <MapPin className="mr-2 h-4 w-4 text-muted-foreground" />
-                        <SelectValue placeholder="Pilih domisili" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {domiciles.map((domicile) => (
-                        <SelectItem key={domicile.id} value={domicile.id}>
-                          {domicile.name} {domicile.city && `- ${domicile.city}`}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <FormLabel>Alamat *</FormLabel>
+                  <FormControl>
+                    <div className="relative">
+                      <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        {...field}
+                        placeholder="Masukkan alamat lengkap"
+                        className="pl-10"
+                        disabled={isLoading}
+                      />
+                    </div>
+                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
@@ -430,7 +410,7 @@ export function BuyerRegistrationForm({ onSuccess, onSwitchToLogin }: BuyerRegis
               <Users className="h-4 w-4" />
               Kode Referral
             </h3>
-            
+
             <FormField
               control={form.control}
               name="referralCode"
@@ -456,9 +436,9 @@ export function BuyerRegistrationForm({ onSuccess, onSwitchToLogin }: BuyerRegis
             />
           </div>
 
-          <Button 
-            type="submit" 
-            className="w-full bg-[#111111] hover:bg-black text-white" 
+          <Button
+            type="submit"
+            className="w-full bg-[#111111] hover:bg-black text-white"
             disabled={isLoading}
           >
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
