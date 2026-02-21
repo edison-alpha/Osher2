@@ -78,7 +78,7 @@ export function useActiveOrders(courierId: string | undefined) {
           )
         `)
         .eq('courier_id', courierId)
-        .in('status', ['assigned', 'picked_up', 'on_delivery'])
+        .in('status', ['assigned', 'on_delivery'])
         .order('assigned_at', { ascending: true });
 
       if (error) throw error;

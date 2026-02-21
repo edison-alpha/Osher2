@@ -37,12 +37,12 @@ export function useUpdateOrderStatus() {
   return useMutation({
     mutationFn: async ({ orderId, status, courierId }: { orderId: string; status: OrderStatus; courierId?: string }) => {
       const updateData: Record<string, unknown> = {};
-      
+
       // If courier is being assigned
       if (courierId) {
         updateData.courier_id = courierId;
         updateData.assigned_at = new Date().toISOString();
-        
+
         // Automatically set status to 'assigned' if current status is 'paid'
         // This ensures courier sees the order immediately
         if (status === 'paid') {
@@ -54,14 +54,12 @@ export function useUpdateOrderStatus() {
         // If no courier, just update status
         updateData.status = status;
       }
-      
+
       // Set timestamps based on status
       if (updateData.status === 'delivered') {
         updateData.delivered_at = new Date().toISOString();
       } else if (updateData.status === 'cancelled') {
         updateData.cancelled_at = new Date().toISOString();
-      } else if (updateData.status === 'picked_up') {
-        updateData.picked_up_at = new Date().toISOString();
       }
 
       const { data, error } = await supabase
@@ -659,7 +657,7 @@ export function useUpdatePayoutStatus() {
       rejection_reason?: string;
     }) => {
       const updateData: Record<string, unknown> = { status };
-      
+
       if (status === 'approved') {
         updateData.approved_at = new Date().toISOString();
       } else if (status === 'rejected') {
@@ -691,7 +689,7 @@ export function useAdminReports(period: '7d' | '30d' | 'month') {
     queryFn: async () => {
       const now = new Date();
       let startDate: Date;
-      
+
       if (period === '7d') {
         startDate = subDays(now, 7);
       } else if (period === '30d') {
@@ -741,19 +739,19 @@ export function useAdminReports(period: '7d' | '30d' | 'month') {
       const totalRevenue = orders?.reduce((sum, o) => sum + Number(o.total), 0) || 0;
       const prevRevenue = prevOrders?.reduce((sum, o) => sum + Number(o.total), 0) || 0;
       const revenueGrowth = prevRevenue > 0 ? ((totalRevenue - prevRevenue) / prevRevenue * 100).toFixed(1) : 0;
-      
+
       const completedOrders = orders?.filter(o => o.status === 'delivered').length || 0;
       const cancelledOrders = orders?.filter(o => o.status === 'cancelled').length || 0;
       const totalOrders = orders?.length || 0;
       const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
-      
+
       const uniqueBuyers = new Set(orders?.map(o => o.buyer_id)).size;
 
       // Daily sales data
       const days = eachDayOfInterval({ start: startDate, end: now });
       const dailySales = days.map(day => {
         const dayStr = format(day, 'yyyy-MM-dd');
-        const dayOrders = orders?.filter(o => 
+        const dayOrders = orders?.filter(o =>
           format(new Date(o.created_at), 'yyyy-MM-dd') === dayStr
         ) || [];
         return {

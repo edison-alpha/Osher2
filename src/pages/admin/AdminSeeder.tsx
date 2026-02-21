@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Users, ShoppingCart, CreditCard, Truck, Loader2, CheckCircle, AlertCircle, Trash2 } from "lucide-react";
+import { Users, ShoppingCart, CreditCard, Loader2, CheckCircle, AlertCircle, Trash2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -21,22 +21,21 @@ const AdminSeeder = () => {
     users: true,
     orders: true,
     payments: true,
-    deliveryProofs: true,
   });
 
   const seedDemoUsers = async () => {
     try {
       const { data, error } = await supabase.functions.invoke("seed-demo-users");
-      
+
       if (error) throw error;
-      
+
       const createdCount = data.results?.filter((r: any) => r.status === "created").length || 0;
       const existsCount = data.results?.filter((r: any) => r.status === "exists").length || 0;
-      
-      return { 
-        success: true, 
+
+      return {
+        success: true,
         count: createdCount,
-        message: `${createdCount} user baru, ${existsCount} sudah ada` 
+        message: `${createdCount} user baru, ${existsCount} sudah ada`
       };
     } catch (error) {
       console.error("Error seeding users:", error);
@@ -52,7 +51,7 @@ const AdminSeeder = () => {
 
       // Get courier profiles  
       const { data: couriers } = await supabase.from("courier_profiles").select("id").limit(2);
-      
+
       // Get products with prices
       const { data: products } = await supabase
         .from("products")
@@ -62,34 +61,33 @@ const AdminSeeder = () => {
         `)
         .eq("is_active", true)
         .limit(10);
-      
+
       if (!products?.length) throw new Error("No products found.");
 
       // Get domicile
       const { data: domiciles } = await supabase.from("domiciles").select("id").limit(1);
 
       const orderStatuses: Array<{
-        status: "new" | "waiting_payment" | "paid" | "assigned" | "picked_up" | "on_delivery" | "delivered" | "cancelled";
+        status: "new" | "waiting_payment" | "paid" | "assigned" | "on_delivery" | "delivered" | "cancelled";
         count: number;
         needsCourier: boolean;
       }> = [
-        { status: "new", count: 3, needsCourier: false },
-        { status: "waiting_payment", count: 3, needsCourier: false },
-        { status: "paid", count: 3, needsCourier: false },
-        { status: "assigned", count: 3, needsCourier: true },
-        { status: "picked_up", count: 2, needsCourier: true },
-        { status: "on_delivery", count: 2, needsCourier: true },
-        { status: "delivered", count: 5, needsCourier: true },
-        { status: "cancelled", count: 2, needsCourier: false },
-      ];
+          { status: "new", count: 3, needsCourier: false },
+          { status: "waiting_payment", count: 3, needsCourier: false },
+          { status: "paid", count: 3, needsCourier: false },
+          { status: "assigned", count: 3, needsCourier: true },
+          { status: "on_delivery", count: 3, needsCourier: true },
+          { status: "delivered", count: 5, needsCourier: true },
+          { status: "cancelled", count: 2, needsCourier: false },
+        ];
 
       let totalOrders = 0;
 
       for (const orderConfig of orderStatuses) {
         for (let i = 0; i < orderConfig.count; i++) {
           const buyer = buyers[Math.floor(Math.random() * buyers.length)];
-          const courier = orderConfig.needsCourier && couriers?.length 
-            ? couriers[Math.floor(Math.random() * couriers.length)] 
+          const courier = orderConfig.needsCourier && couriers?.length
+            ? couriers[Math.floor(Math.random() * couriers.length)]
             : null;
 
           // Random products for this order (1-3 items)
@@ -103,7 +101,7 @@ const AdminSeeder = () => {
             const price = product.product_prices?.[0]?.selling_price || 10000;
             const hpp = product.product_prices?.[0]?.hpp_average || 5000;
             const qty = Math.floor(Math.random() * 3) + 1;
-            
+
             orderProducts.push({
               product_id: product.id,
               product_name: product.name,
@@ -112,7 +110,7 @@ const AdminSeeder = () => {
               hpp_at_order: hpp,
               subtotal: price * qty,
             });
-            
+
             subtotal += price * qty;
             totalHpp += hpp * qty;
           }
@@ -132,11 +130,8 @@ const AdminSeeder = () => {
           createdAt.setHours(createdAt.getHours() - hoursAgo);
 
           const assignedAt = courier ? new Date(createdAt.getTime() + 30 * 60000) : null; // 30 min after created
-          const pickedUpAt = ["picked_up", "on_delivery", "delivered"].includes(orderConfig.status) && assignedAt
-            ? new Date(assignedAt.getTime() + 60 * 60000) // 1 hour after assigned
-            : null;
-          const deliveredAt = orderConfig.status === "delivered" && pickedUpAt
-            ? new Date(pickedUpAt.getTime() + 120 * 60000) // 2 hours after picked up
+          const deliveredAt = orderConfig.status === "delivered" && assignedAt
+            ? new Date(assignedAt.getTime() + 180 * 60000) // 3 hours after assigned
             : null;
 
           // Create order
@@ -152,20 +147,17 @@ const AdminSeeder = () => {
               total,
               total_hpp: totalHpp,
               order_number: orderNumber,
-              notes: orderConfig.status === 'cancelled' 
-                ? 'Dibatalkan oleh pembeli' 
+              notes: orderConfig.status === 'cancelled'
+                ? 'Dibatalkan oleh pembeli'
                 : orderConfig.status === 'delivered'
-                ? 'Pesanan telah diterima dengan baik'
-                : orderConfig.status === 'on_delivery'
-                ? 'Sedang dalam perjalanan'
-                : orderConfig.status === 'picked_up'
-                ? 'Paket sudah diambil kurir'
-                : orderConfig.status === 'assigned'
-                ? 'Menunggu kurir mengambil paket'
-                : '',
+                  ? 'Pesanan telah diterima dengan baik'
+                  : orderConfig.status === 'on_delivery'
+                    ? 'Sedang dalam perjalanan'
+                    : orderConfig.status === 'assigned'
+                      ? 'Menunggu kurir memproses paket'
+                      : '',
               created_at: createdAt.toISOString(),
               assigned_at: assignedAt?.toISOString() || null,
-              picked_up_at: pickedUpAt?.toISOString() || null,
               delivered_at: deliveredAt?.toISOString() || null,
               cancelled_at: orderConfig.status === "cancelled" ? createdAt.toISOString() : null,
             }])
@@ -189,7 +181,7 @@ const AdminSeeder = () => {
             order_id: order.id,
             recipient_name: [
               "Ibu Siti Rahayu",
-              "Bapak Ahmad Fauzi", 
+              "Bapak Ahmad Fauzi",
               "Ibu Dewi Kusuma",
               "Bapak Eko Prasetyo",
               "Ibu Rina Wati",
@@ -248,7 +240,7 @@ const AdminSeeder = () => {
       const { data: orders } = await supabase
         .from("orders")
         .select("id, total")
-        .in("status", ["paid", "assigned", "picked_up", "on_delivery", "delivered"]);
+        .in("status", ["paid", "assigned", "on_delivery", "delivered"]);
 
       if (!orders?.length) {
         return { success: true, count: 0, message: "No orders need payment confirmation" };
@@ -258,7 +250,7 @@ const AdminSeeder = () => {
       const { data: existingPayments } = await supabase
         .from("payment_confirmations")
         .select("order_id");
-      
+
       const existingOrderIds = new Set(existingPayments?.map((p) => p.order_id) || []);
       const ordersNeedingPayment = orders.filter((o) => !existingOrderIds.has(o.id));
 
@@ -285,52 +277,7 @@ const AdminSeeder = () => {
     }
   };
 
-  const seedDeliveryProofs = async () => {
-    try {
-      // Get delivered orders
-      const { data: orders } = await supabase
-        .from("orders")
-        .select("id, courier_id")
-        .eq("status", "delivered")
-        .not("courier_id", "is", null);
 
-      if (!orders?.length) {
-        return { success: true, count: 0, message: "No delivered orders found" };
-      }
-
-      // Check existing delivery proofs
-      const { data: existingProofs } = await supabase
-        .from("delivery_proofs")
-        .select("order_id");
-      
-      const existingOrderIds = new Set(existingProofs?.map((p) => p.order_id) || []);
-      const ordersNeedingProof = orders.filter((o) => !existingOrderIds.has(o.id));
-
-      let count = 0;
-      for (const order of ordersNeedingProof) {
-        // Get courier user_id
-        const { data: courier } = await supabase
-          .from("courier_profiles")
-          .select("user_id")
-          .eq("id", order.courier_id)
-          .single();
-
-        const { error } = await supabase.from("delivery_proofs").insert({
-          order_id: order.id,
-          photo_url: "https://placehold.co/400x600/png?text=Bukti+Pengiriman",
-          notes: "Paket diterima dengan baik",
-          created_by: courier?.user_id || null,
-        });
-
-        if (!error) count++;
-      }
-
-      return { success: true, count, message: `${count} delivery proofs created` };
-    } catch (error) {
-      console.error("Error seeding delivery proofs:", error);
-      return { success: false, count: 0, message: String(error) };
-    }
-  };
 
   const handleSeedAll = async () => {
     setIsLoading(true);
@@ -368,18 +315,10 @@ const AdminSeeder = () => {
         });
       }
 
-      if (selectedSeeds.deliveryProofs) {
-        const proofResult = await seedDeliveryProofs();
-        newResults.push({
-          type: "Delivery Proofs",
-          count: proofResult.count,
-          status: proofResult.success ? "success" : "error",
-          message: proofResult.message,
-        });
-      }
+
 
       setResults(newResults);
-      
+
       const hasError = newResults.some((r) => r.status === "error");
       if (hasError) {
         toast.error("Beberapa seed data gagal");
@@ -424,9 +363,8 @@ const AdminSeeder = () => {
 
   const seedOptions = [
     { key: "users", label: "Demo Users", icon: Users, description: "1 Admin, 2 Kurir (Budi & Andi), 3 Buyer" },
-    { key: "orders", label: "Demo Orders", icon: ShoppingCart, description: "~23 orders berbagai status" },
+    { key: "orders", label: "Demo Orders", icon: ShoppingCart, description: "~20 orders berbagai status" },
     { key: "payments", label: "Payment Confirmations", icon: CreditCard, description: "Bukti bayar untuk orders" },
-    { key: "deliveryProofs", label: "Delivery Proofs", icon: Truck, description: "Bukti kirim untuk delivered" },
   ];
 
   return (
@@ -539,9 +477,8 @@ const AdminSeeder = () => {
               {results.map((result, index) => (
                 <div
                   key={index}
-                  className={`flex items-center justify-between p-3 rounded-lg ${
-                    result.status === "success" ? "bg-green-50 dark:bg-green-950" : "bg-red-50 dark:bg-red-950"
-                  }`}
+                  className={`flex items-center justify-between p-3 rounded-lg ${result.status === "success" ? "bg-green-50 dark:bg-green-950" : "bg-red-50 dark:bg-red-950"
+                    }`}
                 >
                   <div className="flex items-center gap-2">
                     {result.status === "success" ? (

@@ -7,7 +7,7 @@ import { Package, Truck, CheckCircle } from 'lucide-react';
 
 const statusLabels: Record<string, { label: string; icon: typeof Package }> = {
   assigned: { label: 'Order baru ditugaskan', icon: Truck },
-  picked_up: { label: 'Order siap diantar', icon: Package },
+  on_delivery: { label: 'Order dalam pengantaran', icon: Truck },
   delivered: { label: 'Order terkirim', icon: CheckCircle },
 };
 

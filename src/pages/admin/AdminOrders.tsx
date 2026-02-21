@@ -48,7 +48,6 @@ const statusColors: Record<string, string> = {
   waiting_payment: 'bg-warning text-warning-foreground',
   paid: 'bg-success text-success-foreground',
   assigned: 'bg-primary text-primary-foreground',
-  picked_up: 'bg-primary text-primary-foreground',
   on_delivery: 'bg-accent text-accent-foreground',
   delivered: 'bg-success text-success-foreground',
   cancelled: 'bg-destructive text-destructive-foreground',
@@ -62,8 +61,7 @@ const statusLabels: Record<string, string> = {
   waiting_payment: 'Menunggu Bayar',
   paid: 'Dibayar',
   assigned: 'Ditugaskan',
-  picked_up: 'Diambil',
-  on_delivery: 'Dikirim',
+  on_delivery: 'Dalam Pengantaran',
   delivered: 'Selesai',
   cancelled: 'Dibatalkan',
   refunded: 'Refund',
@@ -72,7 +70,7 @@ const statusLabels: Record<string, string> = {
 };
 
 const statusOptions: OrderStatus[] = [
-  'new', 'waiting_payment', 'paid', 'assigned', 'picked_up', 
+  'new', 'waiting_payment', 'paid', 'assigned',
   'on_delivery', 'delivered', 'cancelled', 'refunded', 'failed', 'returned'
 ];
 
@@ -93,16 +91,16 @@ export default function AdminOrders() {
   const [newStatus, setNewStatus] = useState<OrderStatus>('new');
 
   const filteredOrders = orders?.filter(o => {
-    const matchesSearch = 
+    const matchesSearch =
       o.order_number.toLowerCase().includes(search.toLowerCase()) ||
       o.buyer?.full_name?.toLowerCase().includes(search.toLowerCase());
-    
+
     const orderDate = new Date(o.created_at);
     const matchesDate = !dateRange?.from || (
-      orderDate >= dateRange.from && 
+      orderDate >= dateRange.from &&
       (!dateRange.to || orderDate <= dateRange.to)
     );
-    
+
     return matchesSearch && matchesDate;
   });
 
@@ -208,9 +206,9 @@ export default function AdminOrders() {
             className="w-full md:w-auto rounded-full"
           />
         </div>
-        <Button 
-          variant="outline" 
-          onClick={handleExport} 
+        <Button
+          variant="outline"
+          onClick={handleExport}
           disabled={!filteredOrders?.length}
           className="rounded-full bg-gray-900 hover:bg-gray-800 text-white border-0"
         >
@@ -230,87 +228,87 @@ export default function AdminOrders() {
           </CardTitle>
         </CardHeader>
         <CardContent className="pt-6">{isLoading ? (
-            <div className="space-y-4">
-              {[...Array(5)].map((_, i) => (
-                <Skeleton key={i} className="h-16 w-full rounded-2xl" />
-              ))}
-            </div>
-          ) : (
-            <>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>No. Pesanan</TableHead>
-                      <TableHead>Pembeli</TableHead>
-                      <TableHead>Tanggal</TableHead>
-                      <TableHead>Total</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Kurir</TableHead>
-                      <TableHead className="text-right">Aksi</TableHead>
+          <div className="space-y-4">
+            {[...Array(5)].map((_, i) => (
+              <Skeleton key={i} className="h-16 w-full rounded-2xl" />
+            ))}
+          </div>
+        ) : (
+          <>
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>No. Pesanan</TableHead>
+                    <TableHead>Pembeli</TableHead>
+                    <TableHead>Tanggal</TableHead>
+                    <TableHead>Total</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Kurir</TableHead>
+                    <TableHead className="text-right">Aksi</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {paginatedData?.map((order) => (
+                    <TableRow key={order.id}>
+                      <TableCell className="font-mono text-sm">{order.order_number}</TableCell>
+                      <TableCell>
+                        <div>
+                          <p className="font-medium">{order.buyer?.full_name || '-'}</p>
+                          <p className="text-xs text-muted-foreground">{order.buyer?.phone}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        {format(new Date(order.created_at), 'dd MMM yyyy HH:mm', { locale: id })}
+                      </TableCell>
+                      <TableCell className="font-semibold">
+                        {formatCurrency(Number(order.total))}
+                      </TableCell>
+                      <TableCell>
+                        <Badge className={`${statusColors[order.status]} rounded-full`}>
+                          {statusLabels[order.status]}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {order.courier?.full_name || '-'}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-9 w-9 rounded-full hover:bg-gray-100"
+                            onClick={() => handleViewDetail(order)}
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-9 w-9 rounded-full hover:bg-gray-100"
+                            onClick={() => handleOpenAssign(order)}
+                          >
+                            <Truck className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {paginatedData?.map((order) => (
-                      <TableRow key={order.id}>
-                        <TableCell className="font-mono text-sm">{order.order_number}</TableCell>
-                        <TableCell>
-                          <div>
-                            <p className="font-medium">{order.buyer?.full_name || '-'}</p>
-                            <p className="text-xs text-muted-foreground">{order.buyer?.phone}</p>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          {format(new Date(order.created_at), 'dd MMM yyyy HH:mm', { locale: id })}
-                        </TableCell>
-                        <TableCell className="font-semibold">
-                          {formatCurrency(Number(order.total))}
-                        </TableCell>
-                        <TableCell>
-                          <Badge className={`${statusColors[order.status]} rounded-full`}>
-                            {statusLabels[order.status]}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {order.courier?.full_name || '-'}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex justify-end gap-2">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-9 w-9 rounded-full hover:bg-gray-100"
-                              onClick={() => handleViewDetail(order)}
-                            >
-                              <Eye className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-9 w-9 rounded-full hover:bg-gray-100"
-                              onClick={() => handleOpenAssign(order)}
-                            >
-                              <Truck className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-              <DataPagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={goToPage}
-                startIndex={startIndex}
-                endIndex={endIndex}
-                totalItems={totalItems}
-                itemsPerPage={itemsPerPage}
-                onItemsPerPageChange={setItemsPerPage}
-              />
-            </>
-          )}
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+            <DataPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={goToPage}
+              startIndex={startIndex}
+              endIndex={endIndex}
+              totalItems={totalItems}
+              itemsPerPage={itemsPerPage}
+              onItemsPerPageChange={setItemsPerPage}
+            />
+          </>
+        )}
         </CardContent>
       </Card>
 
@@ -372,8 +370,8 @@ export default function AdminOrders() {
                     <div key={item.id} className="flex justify-between items-center bg-gradient-to-r from-gray-50 to-gray-100 rounded-2xl p-3 border border-gray-200">
                       <div className="flex items-center gap-3">
                         {item.product?.image_url ? (
-                          <img 
-                            src={item.product.image_url} 
+                          <img
+                            src={item.product.image_url}
                             alt={item.product_name}
                             className="h-12 w-12 rounded-xl object-cover border border-gray-200"
                           />

@@ -39,7 +39,6 @@ import AdminReports from "./pages/admin/AdminReports";
 import AdminAuditLog from "./pages/admin/AdminAuditLog";
 import AdminSettings from "./pages/admin/AdminSettings";
 import AdminPayments from "./pages/admin/AdminPayments";
-import AdminDeliveryProofs from "./pages/admin/AdminDeliveryProofs";
 import AdminSeeder from "./pages/admin/AdminSeeder";
 import NotFound from "./pages/NotFound";
 import Install from "./pages/Install";
@@ -61,7 +60,7 @@ const App = () => (
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/auth" element={<Auth />} />
-                    
+
                     {/* Protected Buyer Routes */}
                     <Route element={<BuyerRoute />}>
                       <Route path="/buyer" element={<BuyerDashboard />} />
@@ -74,7 +73,7 @@ const App = () => (
                       <Route path="/buyer/profile" element={<BuyerProfile />} />
                       <Route path="/buyer/transaction/:type/:id" element={<TransactionDetail />} />
                     </Route>
-                    
+
                     {/* Protected Courier Routes */}
                     <Route element={<CourierRoute />}>
                       <Route path="/courier" element={<CourierDashboard />} />
@@ -82,7 +81,7 @@ const App = () => (
                       <Route path="/courier/history" element={<OrderHistory />} />
                       <Route path="/courier/profile" element={<CourierProfile />} />
                     </Route>
-                    
+
                     {/* Protected Admin Routes */}
                     <Route element={<AdminRoute />}>
                       <Route path="/admin" element={<AdminLayout />}>
@@ -90,7 +89,6 @@ const App = () => (
                         <Route path="products" element={<AdminProducts />} />
                         <Route path="orders" element={<AdminOrders />} />
                         <Route path="payments" element={<AdminPayments />} />
-                        <Route path="delivery-proofs" element={<AdminDeliveryProofs />} />
                         <Route path="inventory" element={<AdminInventory />} />
                         <Route path="pricing" element={<AdminPricing />} />
                         <Route path="couriers" element={<AdminCouriers />} />
@@ -102,7 +100,7 @@ const App = () => (
                         <Route path="seeder" element={<AdminSeeder />} />
                       </Route>
                     </Route>
-                    
+
                     <Route path="/install" element={<Install />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>

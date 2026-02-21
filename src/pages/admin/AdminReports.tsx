@@ -4,13 +4,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
-import { 
-  BarChart, 
-  Bar, 
-  XAxis, 
-  YAxis, 
-  CartesianGrid, 
-  Tooltip, 
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
   ResponsiveContainer,
   LineChart,
   Line,
@@ -21,10 +21,10 @@ import {
   AreaChart,
   Area
 } from 'recharts';
-import { 
-  TrendingUp, 
-  DollarSign, 
-  ShoppingCart, 
+import {
+  TrendingUp,
+  DollarSign,
+  ShoppingCart,
   Package,
   Users,
   Truck,
@@ -40,8 +40,7 @@ const statusLabels: Record<string, string> = {
   waiting_payment: 'Menunggu Bayar',
   paid: 'Dibayar',
   assigned: 'Ditugaskan',
-  picked_up: 'Diambil',
-  on_delivery: 'Dikirim',
+  on_delivery: 'Dalam Pengantaran',
   delivered: 'Selesai',
   cancelled: 'Dibatalkan',
 };
@@ -74,8 +73,8 @@ export default function AdminReports() {
           <p className="font-medium">{label}</p>
           {payload.map((entry: any, index: number) => (
             <p key={index} className="text-sm" style={{ color: entry.color }}>
-              {entry.name}: {entry.name.includes('Penjualan') || entry.name.includes('Revenue') 
-                ? formatCurrencyFull(entry.value) 
+              {entry.name}: {entry.name.includes('Penjualan') || entry.name.includes('Revenue')
+                ? formatCurrencyFull(entry.value)
                 : entry.value}
             </p>
           ))}
@@ -198,28 +197,28 @@ export default function AdminReports() {
                     <AreaChart data={reports?.dailySales || []}>
                       <defs>
                         <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3}/>
-                          <stop offset="95%" stopColor="#6366f1" stopOpacity={0}/>
+                          <stop offset="5%" stopColor="#6366f1" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="#6366f1" stopOpacity={0} />
                         </linearGradient>
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                      <XAxis 
-                        dataKey="date" 
+                      <XAxis
+                        dataKey="date"
                         className="text-xs"
                         stroke="#9ca3af"
                         tickFormatter={(value) => format(new Date(value), 'dd MMM', { locale: idLocale })}
                       />
-                      <YAxis 
+                      <YAxis
                         className="text-xs"
                         stroke="#9ca3af"
                         tickFormatter={(value) => formatCurrency(value)}
                       />
                       <Tooltip content={<CustomTooltip />} />
-                      <Area 
-                        type="monotone" 
-                        dataKey="revenue" 
+                      <Area
+                        type="monotone"
+                        dataKey="revenue"
                         name="Penjualan"
-                        stroke="#6366f1" 
+                        stroke="#6366f1"
                         fill="url(#colorRevenue)"
                         strokeWidth={2}
                       />
@@ -271,26 +270,26 @@ export default function AdminReports() {
               <CardContent className="pt-6">
                 <div className="h-[300px]">
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart 
-                      data={reports?.topProducts || []} 
+                    <BarChart
+                      data={reports?.topProducts || []}
                       layout="vertical"
                       margin={{ left: 20 }}
                     >
                       <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                       <XAxis type="number" className="text-xs" stroke="#9ca3af" />
-                      <YAxis 
-                        type="category" 
-                        dataKey="name" 
+                      <YAxis
+                        type="category"
+                        dataKey="name"
                         className="text-xs"
                         stroke="#9ca3af"
                         width={100}
                         tickFormatter={(value) => value.length > 15 ? value.slice(0, 15) + '...' : value}
                       />
                       <Tooltip content={<CustomTooltip />} />
-                      <Bar 
-                        dataKey="quantity" 
+                      <Bar
+                        dataKey="quantity"
                         name="Terjual"
-                        fill="#6366f1" 
+                        fill="#6366f1"
                         radius={[0, 8, 8, 0]}
                       />
                     </BarChart>
@@ -315,19 +314,19 @@ export default function AdminReports() {
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={reports?.dailySales || []}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                      <XAxis 
-                        dataKey="date" 
+                      <XAxis
+                        dataKey="date"
                         className="text-xs"
                         stroke="#9ca3af"
                         tickFormatter={(value) => format(new Date(value), 'dd MMM', { locale: idLocale })}
                       />
                       <YAxis className="text-xs" stroke="#9ca3af" />
                       <Tooltip content={<CustomTooltip />} />
-                      <Line 
-                        type="monotone" 
-                        dataKey="orders" 
+                      <Line
+                        type="monotone"
+                        dataKey="orders"
                         name="Pesanan"
-                        stroke="#06b6d4" 
+                        stroke="#06b6d4"
                         strokeWidth={2}
                         dot={{ fill: '#06b6d4', r: 4 }}
                       />
@@ -362,7 +361,7 @@ export default function AdminReports() {
                         ))}
                       </Pie>
                       <Tooltip />
-                      <Legend 
+                      <Legend
                         formatter={(value) => statusLabels[value] || value}
                       />
                     </PieChart>
@@ -387,18 +386,18 @@ export default function AdminReports() {
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={reports?.courierPerformance || []}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                      <XAxis 
-                        dataKey="name" 
+                      <XAxis
+                        dataKey="name"
                         className="text-xs"
                         stroke="#9ca3af"
                         tickFormatter={(value) => value.length > 10 ? value.slice(0, 10) + '...' : value}
                       />
                       <YAxis className="text-xs" stroke="#9ca3af" />
                       <Tooltip content={<CustomTooltip />} />
-                      <Bar 
-                        dataKey="deliveries" 
+                      <Bar
+                        dataKey="deliveries"
                         name="Pengiriman"
-                        fill="#10b981" 
+                        fill="#10b981"
                         radius={[8, 8, 0, 0]}
                       />
                     </BarChart>
@@ -454,7 +453,7 @@ export default function AdminReports() {
                 <div className="space-y-3 max-h-[300px] overflow-y-auto">
                   {reports?.lowStockProducts && reports.lowStockProducts.length > 0 ? (
                     reports.lowStockProducts.map((product, index) => (
-                      <div 
+                      <div
                         key={index}
                         className="flex items-center justify-between p-4 rounded-2xl bg-gradient-to-r from-gray-50 to-gray-100 border border-gray-200"
                       >

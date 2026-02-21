@@ -1,12 +1,12 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { 
-  ArrowLeft, 
-  Package, 
-  Clock, 
-  CheckCircle, 
-  MapPin, 
-  Phone, 
-  User, 
+import {
+  ArrowLeft,
+  Package,
+  Clock,
+  CheckCircle,
+  MapPin,
+  Phone,
+  User,
   CreditCard,
   Truck,
   XCircle,
@@ -30,9 +30,9 @@ import { cn } from '@/lib/utils';
 import { useState } from 'react';
 import { getPaymentsWithSignedUrls } from '@/lib/storageUtils';
 
-const statusConfig: Record<string, { 
-  label: string; 
-  color: string; 
+const statusConfig: Record<string, {
+  label: string;
+  color: string;
   bgColor: string;
   dotColor: string;
   icon: typeof Package;
@@ -42,9 +42,8 @@ const statusConfig: Record<string, {
   waiting_payment: { label: 'Menunggu Pembayaran', color: 'text-amber-600', bgColor: 'bg-amber-50', dotColor: 'bg-amber-500', icon: Clock, step: 0 },
   paid: { label: 'Pesanan Diproses', color: 'text-emerald-600', bgColor: 'bg-emerald-50', dotColor: 'bg-emerald-500', icon: CreditCard, step: 1 },
   assigned: { label: 'Sedang Dikemas', color: 'text-purple-600', bgColor: 'bg-purple-50', dotColor: 'bg-purple-500', icon: Package, step: 2 },
-  picked_up: { label: 'Dikirim', color: 'text-indigo-600', bgColor: 'bg-indigo-50', dotColor: 'bg-indigo-500', icon: Truck, step: 3 },
-  on_delivery: { label: 'Dalam Pengiriman', color: 'text-orange-600', bgColor: 'bg-orange-50', dotColor: 'bg-orange-500', icon: Truck, step: 3 },
-  delivered: { label: 'Selesai', color: 'text-green-600', bgColor: 'bg-green-50', dotColor: 'bg-green-500', icon: CheckCircle, step: 4 },
+  on_delivery: { label: 'Dalam Pengantaran', color: 'text-orange-600', bgColor: 'bg-orange-50', dotColor: 'bg-orange-500', icon: Truck, step: 2 },
+  delivered: { label: 'Selesai', color: 'text-green-600', bgColor: 'bg-green-50', dotColor: 'bg-green-500', icon: CheckCircle, step: 3 },
   cancelled: { label: 'Dibatalkan', color: 'text-red-600', bgColor: 'bg-red-50', dotColor: 'bg-red-500', icon: XCircle, step: -1 },
   refunded: { label: 'Dikembalikan', color: 'text-amber-600', bgColor: 'bg-amber-50', dotColor: 'bg-amber-500', icon: RotateCcw, step: -1 },
   failed: { label: 'Gagal', color: 'text-red-600', bgColor: 'bg-red-50', dotColor: 'bg-red-500', icon: AlertCircle, step: -1 },
@@ -54,8 +53,7 @@ const statusConfig: Record<string, {
 // Status flow steps for timeline
 const statusFlowSteps = [
   { key: 'paid', label: 'Diproses', description: 'Pesanan diproses' },
-  { key: 'assigned', label: 'Dikemas', description: 'Sedang dikemas' },
-  { key: 'picked_up', label: 'Dikirim', description: 'Dikirim ke alamat' },
+  { key: 'assigned', label: 'Dikirim', description: 'Dikirim ke alamat' },
   { key: 'delivered', label: 'Selesai', description: 'Pesanan diterima' },
 ];
 
@@ -66,8 +64,8 @@ interface StatusTimelineProps {
 
 function StatusTimeline({ currentStatus, statusHistory }: StatusTimelineProps) {
   const currentStep = statusConfig[currentStatus]?.step || 0;
-  const isProcessing = currentStep >= 1 && currentStep <= 4;
-  const isCompleted = currentStep === 4;
+  const isProcessing = currentStep >= 1 && currentStep <= 3;
+  const isCompleted = currentStep === 3;
   const isCancelled = currentStep === -1;
 
   // Get latest status history date
@@ -113,7 +111,7 @@ function StatusTimeline({ currentStatus, statusHistory }: StatusTimelineProps) {
       {/* Progress Bar */}
       <div className="relative mb-6">
         <div className="absolute left-0 right-0 top-[14px] h-[2px] bg-gray-100" />
-        <div 
+        <div
           className="absolute left-0 top-[14px] h-[2px] bg-[#111111] transition-all duration-500"
           style={{ width: `${Math.min((currentStep - 1) / 3 * 100, 100)}%` }}
         />
@@ -122,13 +120,13 @@ function StatusTimeline({ currentStatus, statusHistory }: StatusTimelineProps) {
             const stepNumber = index + 1;
             const isActive = currentStep >= stepNumber;
             const isCurrent = currentStep === stepNumber;
-            
+
             return (
               <div key={step.key} className="flex flex-col items-center">
                 <div className={cn(
                   "w-7 h-7 rounded-full flex items-center justify-center border-2 transition-all duration-300 z-10",
-                  isActive 
-                    ? "bg-[#111111] border-[#111111]" 
+                  isActive
+                    ? "bg-[#111111] border-[#111111]"
                     : "bg-white border-gray-200",
                   isCurrent && "ring-4 ring-gray-100"
                 )}>
@@ -160,9 +158,9 @@ function StatusTimeline({ currentStatus, statusHistory }: StatusTimelineProps) {
             {statusConfig[currentStatus]?.label || currentStatus}
           </p>
           <p className="text-sm text-[#8E8E93] mt-0.5">
-            {isCompleted 
+            {isCompleted
               ? 'Pesanan telah diterima'
-              : isProcessing 
+              : isProcessing
                 ? statusFlowSteps.find(s => s.key === currentStatus)?.description || 'Pesanan sedang diproses'
                 : 'Pesanan menunggu pembayaran'
             }
@@ -194,7 +192,7 @@ export default function OrderDetail() {
     queryKey: ['buyer-order-detail', orderId],
     queryFn: async () => {
       if (!orderId || !profileId) return null;
-      
+
       const { data, error } = await supabase
         .from('orders')
         .select(`
@@ -239,12 +237,6 @@ export default function OrderDetail() {
             is_confirmed,
             transfer_date,
             created_at
-          ),
-          delivery_proofs (
-            id,
-            photo_url,
-            notes,
-            created_at
           )
         `)
         .eq('id', orderId)
@@ -252,13 +244,13 @@ export default function OrderDetail() {
         .single();
 
       if (error) throw error;
-      
+
       // Generate signed URLs for payment proofs
       if (data?.payment_confirmations) {
         const paymentsWithSignedUrls = await getPaymentsWithSignedUrls(data.payment_confirmations);
         return { ...data, payment_confirmations: paymentsWithSignedUrls };
       }
-      
+
       return data;
     },
     enabled: !!orderId && !!profileId,
@@ -331,7 +323,7 @@ export default function OrderDetail() {
             </div>
             <h2 className="text-base font-semibold text-[#111111] mb-1">Pesanan Tidak Ditemukan</h2>
             <p className="text-xs text-[#8E8E93] mb-4">Pesanan yang Anda cari tidak ada</p>
-            <Button 
+            <Button
               onClick={() => navigate('/buyer/orders')}
               className="bg-[#111111] hover:bg-[#333]"
             >
@@ -351,7 +343,6 @@ export default function OrderDetail() {
     (a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
   );
   const payment = order.payment_confirmations?.[0];
-  const deliveryProof = order.delivery_proofs?.[0];
 
   return (
     <div className="min-h-screen bg-[#F9F9F9] pb-32">
@@ -359,7 +350,7 @@ export default function OrderDetail() {
         {/* Header */}
         <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-sm border-b border-gray-100 px-4" style={{ paddingTop: 'max(12px, env(safe-area-inset-top))', paddingBottom: '12px' }}>
           <div className="flex items-center gap-3">
-            <button 
+            <button
               onClick={() => navigate('/buyer/orders')}
               className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
             >
@@ -379,7 +370,7 @@ export default function OrderDetail() {
                 <p className="text-xs text-[#8E8E93] mb-1">No. Pesanan</p>
                 <div className="flex items-center gap-2">
                   <p className="text-sm font-semibold text-[#111111]">{order.order_number}</p>
-                  <button 
+                  <button
                     onClick={copyOrderNumber}
                     className="text-[#8E8E93] hover:text-[#111111] transition-colors"
                   >
@@ -413,8 +404,8 @@ export default function OrderDetail() {
                     {/* Product Image */}
                     <div className="w-16 h-16 rounded-xl bg-gray-100 overflow-hidden shrink-0">
                       {item.products?.image_url ? (
-                        <img 
-                          src={item.products.image_url} 
+                        <img
+                          src={item.products.image_url}
                           alt={item.product_name}
                           className="w-full h-full object-cover"
                           onError={(e) => {
@@ -439,7 +430,7 @@ export default function OrderDetail() {
                   </div>
                 ))}
               </div>
-              
+
               {/* Price Breakdown */}
               <div className="mt-3 pt-3 border-t border-gray-50 space-y-1.5">
                 <div className="flex justify-between text-xs">
@@ -513,7 +504,7 @@ export default function OrderDetail() {
                       </p>
                     )}
                   </div>
-                  <a 
+                  <a
                     href={`tel:${courier.phone}`}
                     className="flex items-center gap-1.5 px-4 py-2 bg-[#111111] rounded-full text-xs font-medium text-white hover:bg-black transition-colors"
                   >
@@ -540,12 +531,12 @@ export default function OrderDetail() {
                 </div>
               </div>
 
-              <PaymentUploadForm 
-                orderId={order.id} 
+              <PaymentUploadForm
+                orderId={order.id}
                 orderTotal={order.total}
                 bankInfo={bankInfo}
               />
-              <CancelOrderDialog 
+              <CancelOrderDialog
                 orderId={order.id}
                 orderNumber={order.order_number}
               />
@@ -564,14 +555,14 @@ export default function OrderDetail() {
                 {payment.proof_image_url && (
                   <div>
                     <p className="text-[10px] text-[#8E8E93] mb-1.5">Bukti Transfer</p>
-                    <img 
-                      src={payment.proof_image_url} 
-                      alt="Bukti pembayaran" 
+                    <img
+                      src={payment.proof_image_url}
+                      alt="Bukti pembayaran"
                       className="w-full rounded-lg border border-gray-100"
                     />
                   </div>
                 )}
-                
+
                 <div className="space-y-1.5 pt-2 border-t border-gray-50">
                   <div className="flex justify-between text-xs">
                     <span className="text-[#8E8E93]">Jumlah</span>
@@ -603,30 +594,7 @@ export default function OrderDetail() {
             </div>
           )}
 
-          {/* Delivery Proof */}
-          {deliveryProof && (
-            <div className="bg-white rounded-xl overflow-hidden shadow-sm">
-              <div className="px-4 py-3 border-b border-gray-50 flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-[#8E8E93]" />
-                <p className="text-xs font-semibold text-[#111111]">Bukti Pengiriman</p>
-              </div>
-              <div className="p-4">
-                {deliveryProof.photo_url && (
-                  <img 
-                    src={deliveryProof.photo_url} 
-                    alt="Bukti pengiriman" 
-                    className="w-full rounded-lg border border-gray-100 mb-2"
-                  />
-                )}
-                {deliveryProof.notes && (
-                  <p className="text-[9px] text-[#8E8E93]">{deliveryProof.notes}</p>
-                )}
-                <p className="text-[10px] text-[#8E8E93] mt-2">
-                  {formatDate(deliveryProof.created_at)}
-                </p>
-              </div>
-            </div>
-          )}
+
 
           {/* Status History Timeline */}
           {statusHistory && statusHistory.length > 0 && (
@@ -641,14 +609,14 @@ export default function OrderDetail() {
                     const historyStatus = statusConfig[history.status] || statusConfig.new;
                     const HistoryIcon = historyStatus.icon;
                     const isLast = index === statusHistory.length - 1;
-                    
+
                     return (
                       <div key={history.id} className="relative flex gap-3">
                         {/* Timeline line - positioned absolutely to connect dots */}
                         {!isLast && (
                           <div className="absolute left-[13px] top-7 bottom-0 w-[2px] bg-gradient-to-b from-gray-300 to-gray-200" />
                         )}
-                        
+
                         {/* Icon container */}
                         <div className="relative z-10 flex flex-col items-center">
                           <div className={cn(
@@ -658,7 +626,7 @@ export default function OrderDetail() {
                             <HistoryIcon className={cn("w-3.5 h-3.5", historyStatus.color)} />
                           </div>
                         </div>
-                        
+
                         {/* Content */}
                         <div className={cn(
                           "flex-1 min-w-0",

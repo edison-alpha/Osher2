@@ -27,7 +27,7 @@ export function useCourierStats() {
         .from('orders')
         .select('id')
         .eq('courier_id', profileId)
-        .in('status', ['picked_up', 'on_delivery']);
+        .in('status', ['on_delivery']);
 
       if (deliveryError) throw deliveryError;
 
@@ -92,7 +92,7 @@ export function useCourierActiveOrders() {
           buyer_profiles (full_name, phone)
         `)
         .eq('courier_id', profileId)
-        .in('status', ['assigned', 'picked_up', 'on_delivery'])
+        .in('status', ['assigned', 'on_delivery'])
         .order('assigned_at', { ascending: true });
 
       if (error) throw error;

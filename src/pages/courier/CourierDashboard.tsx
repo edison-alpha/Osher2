@@ -1,10 +1,10 @@
 import { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
-import { 
-  Package, 
-  CheckCircle, 
-  Clock, 
-  MapPin, 
+import {
+  Package,
+  CheckCircle,
+  Clock,
+  MapPin,
   Phone,
   ArrowRight,
   Calendar,
@@ -159,18 +159,17 @@ export default function CourierDashboard() {
             {activeOrders?.slice(0, 5).map((order: any, index: number) => {
               const address = order.order_addresses?.[0];
               const statusConfig: Record<string, { label: string; color: string; bgColor: string }> = {
-                assigned: { label: 'Siap Diambil', color: 'text-blue-800', bgColor: 'bg-blue-100' },
-                picked_up: { label: 'Diambil', color: 'text-purple-800', bgColor: 'bg-purple-100' },
+                assigned: { label: 'Ditugaskan', color: 'text-blue-800', bgColor: 'bg-blue-100' },
                 on_delivery: { label: 'Dalam Pengantaran', color: 'text-orange-800', bgColor: 'bg-orange-100' },
               };
               const status = statusConfig[order.status] || statusConfig.assigned;
               const firstItem = order.order_items?.[0];
               const itemCount = order.order_items?.length || 0;
               const productImage = firstItem?.products?.image_url;
-              
+
               return (
-                <Link 
-                  key={order.id} 
+                <Link
+                  key={order.id}
                   to="/courier/active"
                   className="block animate-fade-in"
                   style={{ animationDelay: `${index * 100}ms` }}
@@ -201,8 +200,8 @@ export default function CourierDashboard() {
                         <div className="flex items-center gap-3 mb-3 pb-3 border-b border-gray-100">
                           <div className="w-14 h-14 rounded-2xl bg-gray-100 overflow-hidden shrink-0">
                             {productImage ? (
-                              <img 
-                                src={productImage} 
+                              <img
+                                src={productImage}
                                 alt={firstItem.product_name}
                                 className="w-full h-full object-cover"
                               />

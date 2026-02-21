@@ -7,7 +7,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { LoadingScreen } from '@/components/shared/LoadingScreen';
 import { CourierLayout } from '@/components/courier/CourierLayout';
-import { DeliveryProofUpload } from '@/components/courier/DeliveryProofUpload';
 import { useCourierActiveOrders } from '@/hooks/useCourierData';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
@@ -16,17 +15,14 @@ import { useQueryClient } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
 
 const statusConfig: Record<string, { label: string; color: string; bgColor: string; nextStatus: string; nextLabel: string; step: number }> = {
-  assigned: { label: 'Ditugaskan', color: 'text-purple-700', bgColor: 'bg-purple-50', nextStatus: 'picked_up', nextLabel: 'Ambil dari Gudang', step: 1 },
-  picked_up: { label: 'Diambil', color: 'text-indigo-700', bgColor: 'bg-indigo-50', nextStatus: 'on_delivery', nextLabel: 'Mulai Antar', step: 2 },
-  on_delivery: { label: 'Dalam Pengiriman', color: 'text-orange-700', bgColor: 'bg-orange-50', nextStatus: 'delivered', nextLabel: 'Selesai Antar', step: 3 },
+  assigned: { label: 'Ditugaskan', color: 'text-purple-700', bgColor: 'bg-purple-50', nextStatus: 'on_delivery', nextLabel: 'Terima & Proses', step: 1 },
+  on_delivery: { label: 'Dalam Pengantaran', color: 'text-orange-700', bgColor: 'bg-orange-50', nextStatus: 'delivered', nextLabel: 'Selesai Antar', step: 2 },
 };
 
 export default function ActiveOrders() {
   const { profileId } = useAuth();
   const { data: orders, isLoading } = useCourierActiveOrders();
   const [updatingId, setUpdatingId] = useState<string | null>(null);
-  const [proofDialogOpen, setProofDialogOpen] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
@@ -72,17 +68,11 @@ export default function ActiveOrders() {
   };
 
   const handleUpdateStatus = async (orderId: string, newStatus: string) => {
-    if (newStatus === 'delivered') {
-      setSelectedOrder(orders?.find(o => o.id === orderId));
-      setProofDialogOpen(true);
-      return;
-    }
-
     setUpdatingId(orderId);
     try {
       const updateData: any = { status: newStatus };
-      if (newStatus === 'picked_up') {
-        updateData.picked_up_at = new Date().toISOString();
+      if (newStatus === 'delivered') {
+        updateData.delivered_at = new Date().toISOString();
       }
 
       const { error } = await supabase
@@ -93,11 +83,14 @@ export default function ActiveOrders() {
       if (error) throw error;
 
       toast.success('Status diperbarui', {
-        description: `Order berhasil diperbarui ke status: ${statusConfig[newStatus]?.label}`,
+        description: `Order berhasil diperbarui ke status: ${statusConfig[newStatus]?.label || newStatus}`,
       });
 
       queryClient.invalidateQueries({ queryKey: ['courier-active-orders'] });
       queryClient.invalidateQueries({ queryKey: ['courier-stats'] });
+      if (newStatus === 'delivered') {
+        queryClient.invalidateQueries({ queryKey: ['courier-order-history'] });
+      }
     } catch (error: any) {
       toast.error('Gagal update status', {
         description: error.message,
@@ -105,12 +98,6 @@ export default function ActiveOrders() {
     } finally {
       setUpdatingId(null);
     }
-  };
-
-  const handleDeliverySuccess = () => {
-    queryClient.invalidateQueries({ queryKey: ['courier-active-orders'] });
-    queryClient.invalidateQueries({ queryKey: ['courier-order-history'] });
-    queryClient.invalidateQueries({ queryKey: ['courier-stats'] });
   };
 
   const openMaps = (address: any) => {
@@ -164,8 +151,8 @@ export default function ActiveOrders() {
             const productImage = firstItem?.products?.image_url;
 
             return (
-              <div 
-                key={order.id} 
+              <div
+                key={order.id}
                 className={cn(
                   "overflow-hidden transition-all duration-300 animate-fade-in bg-white rounded-3xl shadow-sm hover:shadow-md",
                 )}
@@ -192,8 +179,8 @@ export default function ActiveOrders() {
                 <div className="p-4">
                   {/* Progress Steps */}
                   <div className="flex items-center gap-2 mb-4">
-                    {[1, 2, 3].map((step) => (
-                      <div 
+                    {[1, 2].map((step) => (
+                      <div
                         key={step}
                         className={cn(
                           "flex-1 h-1.5 rounded-full transition-colors",
@@ -208,8 +195,8 @@ export default function ActiveOrders() {
                     <div className="flex items-center gap-3 mb-3 pb-3 border-b border-gray-100">
                       <div className="w-14 h-14 rounded-2xl bg-gray-100 overflow-hidden shrink-0">
                         {productImage ? (
-                          <img 
-                            src={productImage} 
+                          <img
+                            src={productImage}
                             alt={firstItem.product_name}
                             className="w-full h-full object-cover"
                           />
@@ -231,7 +218,7 @@ export default function ActiveOrders() {
                   )}
 
                   {/* Address Card */}
-                  <div 
+                  <div
                     className="bg-gradient-to-br from-blue-50 to-blue-100/30 rounded-2xl p-3 mb-3 cursor-pointer"
                     onClick={() => setExpandedOrderId(isExpanded ? null : order.id)}
                   >
@@ -289,8 +276,8 @@ export default function ActiveOrders() {
                               <div key={item.id} className="flex items-center gap-2 bg-white rounded-xl p-2">
                                 <div className="w-10 h-10 rounded-lg bg-gray-100 overflow-hidden shrink-0">
                                   {item.products?.image_url ? (
-                                    <img 
-                                      src={item.products.image_url} 
+                                    <img
+                                      src={item.products.image_url}
                                       alt={item.product_name}
                                       className="w-full h-full object-cover"
                                     />
@@ -321,8 +308,8 @@ export default function ActiveOrders() {
 
                   {/* Action Buttons */}
                   <div className="flex gap-2">
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       className="flex-1 gap-2 rounded-full h-11 text-xs"
                       onClick={() => openMaps(address)}
                     >
@@ -351,18 +338,7 @@ export default function ActiveOrders() {
         </div>
       )}
 
-      {selectedOrder && (
-        <DeliveryProofUpload
-          orderId={selectedOrder.id}
-          orderNumber={selectedOrder.order_number}
-          isOpen={proofDialogOpen}
-          onClose={() => {
-            setProofDialogOpen(false);
-            setSelectedOrder(null);
-          }}
-          onSuccess={handleDeliverySuccess}
-        />
-      )}
+
     </CourierLayout>
   );
 }

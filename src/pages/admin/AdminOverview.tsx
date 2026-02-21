@@ -1,4 +1,4 @@
-import { 
+import {
   DollarSign,
   ShoppingCart,
   Package,
@@ -31,7 +31,6 @@ const statusColors: Record<string, string> = {
   waiting_payment: 'bg-warning text-warning-foreground',
   paid: 'bg-success text-success-foreground',
   assigned: 'bg-primary text-primary-foreground',
-  picked_up: 'bg-primary text-primary-foreground',
   on_delivery: 'bg-accent text-accent-foreground',
   delivered: 'bg-success text-success-foreground',
   cancelled: 'bg-destructive text-destructive-foreground',
@@ -42,8 +41,7 @@ const statusLabels: Record<string, string> = {
   waiting_payment: 'Menunggu Bayar',
   paid: 'Dibayar',
   assigned: 'Ditugaskan',
-  picked_up: 'Diambil',
-  on_delivery: 'Dikirim',
+  on_delivery: 'Dalam Pengantaran',
   delivered: 'Selesai',
   cancelled: 'Dibatalkan',
 };
@@ -182,8 +180,8 @@ export default function AdminOverview() {
               <CardTitle className="text-gray-900 text-lg font-bold">Pesanan Terbaru</CardTitle>
               <CardDescription className="text-gray-500 mt-1 text-sm">5 pesanan terakhir yang masuk</CardDescription>
             </div>
-            <Button 
-              variant="ghost" 
+            <Button
+              variant="ghost"
               size="sm"
               className="rounded-full bg-gray-900 hover:bg-gray-800 text-white font-medium px-4"
               onClick={() => navigate('/admin/orders')}
@@ -206,19 +204,19 @@ export default function AdminOverview() {
                   const productImage = firstProduct?.image_url;
                   const productName = firstProduct?.name;
                   const itemCount = order.order_items?.length || 0;
-                  
+
                   return (
-                    <div 
-                      key={order.id} 
+                    <div
+                      key={order.id}
                       className="flex items-center justify-between p-4 rounded-2xl bg-gray-50 hover:bg-gray-100 transition-all cursor-pointer border border-gray-100/50 group"
                       onClick={() => navigate('/admin/orders')}
                     >
                       <div className="flex items-center gap-4">
                         {productImage ? (
                           <div className="h-14 w-14 rounded-2xl overflow-hidden bg-white border border-gray-200 flex-shrink-0 group-hover:scale-105 transition-transform">
-                            <img 
-                              src={productImage} 
-                              alt={productName || 'Product'} 
+                            <img
+                              src={productImage}
+                              alt={productName || 'Product'}
                               className="h-full w-full object-cover"
                             />
                           </div>
