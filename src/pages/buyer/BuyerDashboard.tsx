@@ -526,6 +526,7 @@ export default function BuyerDashboard() {
               </p>
             </div>
             <div className="flex-shrink-0 mt-1">
+              <p className="text-[10px] text-[#8E8E93] mb-1 text-right">Pilih lokasi anda</p>
               <Select value={selectedLocation} onValueChange={setSelectedLocation}>
                 <SelectTrigger className="w-[140px] h-9 border-none bg-transparent shadow-none focus:ring-0 focus:ring-offset-0">
                   <div className="flex items-center gap-2">
