@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { ShoppingBag, Truck, Shield } from 'lucide-react';
 import { LoginForm } from '@/components/auth/LoginForm';
 import { BuyerRegistrationForm } from '@/components/auth/BuyerRegistrationForm';
@@ -9,9 +9,21 @@ import osercLogo from '@/assets/oserc.svg';
 type AuthMode = 'login' | 'register';
 
 export default function Auth() {
-  const [mode, setMode] = useState<AuthMode>('login');
+  const [searchParams] = useSearchParams();
+  const initialMode = searchParams.get('mode') === 'register' ? 'register' : 'login';
+  const [mode, setMode] = useState<AuthMode>(initialMode);
   const navigate = useNavigate();
   const { user, loading, role } = useAuth();
+
+  // Sync mode state when URL query parameter changes
+  useEffect(() => {
+    const urlMode = searchParams.get('mode');
+    if (urlMode === 'register') {
+      setMode('register');
+    } else {
+      setMode('login');
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     if (!loading && user && role) {
@@ -46,9 +58,9 @@ export default function Auth() {
       <div className="hidden lg:flex lg:w-1/2 bg-[#111111] p-12 flex-col justify-between">
         <div>
           <div className="flex items-center gap-3">
-            <img 
-              src={osercLogo} 
-              alt="Osher Shop Logo" 
+            <img
+              src={osercLogo}
+              alt="Osher Shop Logo"
               className="h-10 w-10"
             />
             <span className="text-2xl font-bold text-white">Osher Shop</span>
@@ -108,9 +120,9 @@ export default function Auth() {
         <div className="w-full max-w-lg">
           {/* Mobile Logo */}
           <div className="lg:hidden flex items-center justify-center gap-3 mb-8">
-            <img 
-              src={osercLogo} 
-              alt="Osher Shop Logo" 
+            <img
+              src={osercLogo}
+              alt="Osher Shop Logo"
               className="h-10 w-10"
             />
             <span className="text-2xl font-bold text-foreground">Osher Shop</span>
